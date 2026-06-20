@@ -105,7 +105,7 @@ Weekly training schedule (any weekday NOT listed here is a rest day):
 ${scheduleLines}
 
 Requirements:
-- Return EXACTLY 7 day objects, Monday through Sunday, in that order.
+- Return EXACTLY 7 day objects, Sunday through Saturday, in that order (the GCC week starts on Sunday).
 - label is "Training Day" if that day has a training session above, otherwise "Rest Day".
 - Training days: higher carbohydrate/energy intake, timed around the session. Rest days: lower.
 - Strictly respect the dietary restrictions.
@@ -114,7 +114,7 @@ Requirements:
 - focus_note is a single short line.
 
 Return ONLY valid JSON, no markdown, no code fences, no commentary, in exactly this shape:
-{"days":[{"day":"Monday","label":"Training Day","breakfast":"...","lunch":"...","dinner":"...","snacks":"...","estimated_calories":2800,"focus_note":"..."}]}`;
+{"days":[{"day":"Sunday","label":"Training Day","breakfast":"...","lunch":"...","dinner":"...","snacks":"...","estimated_calories":2800,"focus_note":"..."}]}`;
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {

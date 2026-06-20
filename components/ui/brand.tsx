@@ -49,10 +49,11 @@ export function Wordmark({
           Taqa
         </span>
         {withArabic && (
+          // Arabic rests high above the baseline; nudge it down to sit level.
           <span
             lang="ar"
             dir="rtl"
-            className="text-lg font-medium leading-none text-charge/90"
+            className="translate-y-[0.12em] text-lg font-medium leading-none text-charge/90"
           >
             طاقة
           </span>

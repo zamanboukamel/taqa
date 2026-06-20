@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/brand";
+import { Select } from "@/components/ui/select";
 
 // The most popular academy sports across the GCC, plus an "Other" escape hatch.
 const SPORTS = [
@@ -32,8 +33,8 @@ export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Resolve the final sport: the "Other" option uses the free-text value.
-    const sportType = sport === "Other" ? customSport.trim() : sport;
+    // Resolve the final sport: the "Other…" option uses the free-text value.
+    const sportType = sport === "Other…" ? customSport.trim() : sport;
     if (!sportType) {
       setError("Please choose a sport.");
       return;
@@ -82,38 +83,15 @@ export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
           <label htmlFor="sport-type" className="tq-label">
             Sport
           </label>
-          <div className="relative">
-            <select
-              id="sport-type"
-              required
-              value={sport}
-              onChange={(e) => setSport(e.target.value)}
-              className="tq-field [color-scheme:dark] appearance-none pr-10"
-            >
-              <option value="" disabled>
-                Choose a sport…
-              </option>
-              {SPORTS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-              <option value="Other">Other…</option>
-            </select>
-            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-mist">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M6 9l6 6 6-6"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </div>
+          <Select
+            id="sport-type"
+            value={sport}
+            onChange={setSport}
+            placeholder="Choose a sport…"
+            options={[...SPORTS, "Other…"]}
+          />
 
-          {sport === "Other" && (
+          {sport === "Other…" && (
             <input
               type="text"
               required

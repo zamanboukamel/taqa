@@ -42,7 +42,20 @@ export default async function PlayerPlanPage(
       .maybeSingle<Academy>(),
   ]);
 
-  const days = mealPlan?.plan_json?.days ?? [];
+  // Render Sunday-first (GCC week), regardless of the order the plan was
+  // generated in — so existing Monday-first plans display correctly too.
+  const DAY_ORDER = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const days = [...(mealPlan?.plan_json?.days ?? [])].sort(
+    (a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day),
+  );
   const trainingDays = days.filter((d) => d.label === "Training Day").length;
   const avgCalories = days.length
     ? Math.round(
@@ -65,7 +78,7 @@ export default async function PlayerPlanPage(
               <span
                 lang="ar"
                 dir="rtl"
-                className="leading-none text-charge/90"
+                className="translate-y-[0.12em] leading-none text-charge/90"
               >
                 طاقة
               </span>
