@@ -1,12 +1,18 @@
 import type { MealPlanDay } from "@/lib/types";
+import { CountUp } from "@/components/ui/count-up";
 
 function Meal({ label, text }: { label: string; text: string }) {
   return (
-    <div className="border-t border-slate-200 py-3">
-      <p className="text-sm font-bold uppercase tracking-wide text-slate-500">
-        {label}
-      </p>
-      <p className="mt-0.5 text-lg leading-snug text-slate-900">{text}</p>
+    <div className="flex gap-3 border-t border-slate-100 py-3.5 first:border-t-0">
+      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-charge" />
+      <div className="min-w-0">
+        <p className="font-mono text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-slate-400">
+          {label}
+        </p>
+        <p className="mt-0.5 text-[1.05rem] font-medium leading-snug text-ink">
+          {text}
+        </p>
+      </div>
     </div>
   );
 }
@@ -14,29 +20,40 @@ function Meal({ label, text }: { label: string; text: string }) {
 export function DayCard({ day }: { day: MealPlanDay }) {
   const isTraining = day.label === "Training Day";
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <section className="overflow-hidden rounded-3xl bg-white shadow-[0_14px_44px_-18px_rgba(11,20,16,0.35)] ring-1 ring-black/5">
+      {/* Header — Training = energy gradient, Rest = calm gradient.
+          Kept high-contrast (white on saturated color) for sunlight. */}
       <div
-        className={`flex items-center justify-between px-5 py-4 ${
-          isTraining ? "bg-emerald-700" : "bg-slate-800"
+        className={`relative px-5 py-5 ${
+          isTraining
+            ? "bg-gradient-to-br from-[#0a8f6a] via-[#10b981] to-[#34d399]"
+            : "bg-gradient-to-br from-[#26413a] to-[#0f1d17]"
         }`}
       >
-        <div>
-          <h2 className="text-2xl font-extrabold text-white">{day.day}</h2>
-          <p className="text-sm font-semibold uppercase tracking-wide text-white/80">
-            {day.label}
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-2xl font-extrabold leading-none text-white">
-            {day.estimated_calories.toLocaleString()}
-          </p>
-          <p className="text-xs font-semibold uppercase tracking-wide text-white/80">
-            kcal
-          </p>
+        <div className="pointer-events-none absolute inset-0 turf-grid opacity-30" />
+        <div className="relative flex items-start justify-between gap-4">
+          <div>
+            <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/75">
+              {day.label}
+            </p>
+            <h2 className="font-display text-3xl font-semibold text-white">
+              {day.day}
+            </h2>
+          </div>
+
+          {/* Calorie "achievement badge" — counts up on view */}
+          <div className="rounded-2xl bg-black/25 px-4 py-2.5 text-right ring-1 ring-white/15 backdrop-blur">
+            <p className="tabular text-[1.75rem] font-bold leading-none text-white">
+              <CountUp value={day.estimated_calories} />
+            </p>
+            <p className="mt-1 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/70">
+              kcal target
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="px-5 pb-4">
+      <div className="px-5 py-4">
         <Meal label="Breakfast" text={day.breakfast} />
         <Meal label="Lunch" text={day.lunch} />
         <Meal label="Dinner" text={day.dinner} />
@@ -45,13 +62,18 @@ export function DayCard({ day }: { day: MealPlanDay }) {
 
       {day.focus_note && (
         <div
-          className={`px-5 py-3 text-base font-semibold ${
+          className={`mx-5 mb-5 rounded-2xl border-l-[3px] px-4 py-3 ${
             isTraining
-              ? "bg-emerald-50 text-emerald-900"
-              : "bg-slate-100 text-slate-800"
+              ? "border-charge bg-emerald-50"
+              : "border-slate-400 bg-slate-50"
           }`}
         >
-          {day.focus_note}
+          <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-charge-deep">
+            Coach&apos;s note
+          </p>
+          <p className="mt-1 text-[0.95rem] font-medium italic leading-snug text-slate-800">
+            {day.focus_note}
+          </p>
         </div>
       )}
     </section>

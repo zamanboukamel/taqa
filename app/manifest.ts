@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "AI-generated 7-day meal plans for academy athletes.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f1f5f9",
-    theme_color: "#065f46",
+    background_color: "#0b1410",
+    theme_color: "#0b1410",
     icons: [
       {
         src: "/favicon.ico",

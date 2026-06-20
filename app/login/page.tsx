@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Mark, Wordmark, Spinner } from "@/components/ui/brand";
+import { PowerBar } from "@/components/ui/motion";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,95 +56,151 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-md">
-        <h1 className="text-2xl font-bold text-slate-900">Taqa</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          {mode === "login" ? "Director sign in" : "Create a director account"}
+    <main className="grid min-h-screen bg-midnight lg:grid-cols-2">
+      {/* ── Brand panel (desktop only) ─────────────────────────────────── */}
+      <aside className="relative hidden overflow-hidden border-r border-pitch-line lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="pointer-events-none absolute inset-0 turf-grid opacity-50" />
+        <div className="pointer-events-none absolute -top-32 -left-20 h-[520px] w-[520px] charge-glow" />
+
+        <div className="relative">
+          <Link href="/">
+            <Wordmark />
+          </Link>
+        </div>
+
+        <div className="relative">
+          <p className="eyebrow">طاقة · energy</p>
+          <h1 className="font-display mt-4 text-4xl font-semibold leading-tight text-white xl:text-5xl">
+            Every athlete,
+            <br />
+            fuelled for the work.
+          </h1>
+          <p className="mt-5 max-w-sm text-base leading-relaxed text-mist">
+            Sign in to build training-aware nutrition plans and share them with
+            your squad in a single tap.
+          </p>
+          <div className="mt-8 max-w-xs">
+            <PowerBar segments={16} />
+          </div>
+        </div>
+
+        <p className="relative text-sm text-mist-2">
+          AI nutrition for GCC sports academies
         </p>
+      </aside>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-800"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-base text-slate-900 outline-none focus:border-slate-900"
-            />
+      {/* ── Form panel ─────────────────────────────────────────────────── */}
+      <section className="relative flex items-center justify-center px-5 py-12">
+        <div className="pointer-events-none absolute inset-0 turf-grid opacity-30 lg:hidden" />
+        <div className="relative w-full max-w-sm">
+          {/* Mobile-only brand */}
+          <div className="mb-8 flex justify-center lg:hidden">
+            <Link href="/">
+              <Wordmark />
+            </Link>
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-slate-800"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              minLength={6}
-              autoComplete={
-                mode === "login" ? "current-password" : "new-password"
-              }
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-base text-slate-900 outline-none focus:border-slate-900"
-            />
-            <p className="mt-1 text-xs text-slate-500">At least 6 characters.</p>
-          </div>
+          <div className="tq-card p-7">
+            <div className="flex items-center gap-3">
+              <Mark className="h-9 w-9" />
+              <div>
+                <h2 className="font-display text-2xl font-semibold text-white">
+                  {mode === "login" ? "Welcome back" : "Create your account"}
+                </h2>
+                <p className="text-sm text-mist">
+                  {mode === "login"
+                    ? "Director sign in"
+                    : "Start fuelling your athletes"}
+                </p>
+              </div>
+            </div>
 
-          {error && (
-            <p
-              role="alert"
-              className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
-            >
-              {error}
-            </p>
-          )}
-          {notice && (
-            <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
-              {notice}
-            </p>
-          )}
+            <form onSubmit={handleSubmit} className="mt-7 space-y-4">
+              <div>
+                <label htmlFor="email" className="tq-label">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="tq-field"
+                  placeholder="you@academy.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="tq-label">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={6}
+                  autoComplete={
+                    mode === "login" ? "current-password" : "new-password"
+                  }
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="tq-field"
+                  placeholder="••••••••"
+                />
+                <p className="mt-1.5 text-xs text-mist-2">At least 6 characters.</p>
+              </div>
+
+              {error && (
+                <p role="alert" className="tq-alert-error">
+                  {error}
+                </p>
+              )}
+              {notice && <p className="tq-alert-ok">{notice}</p>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="tq-btn tq-btn-primary w-full py-3 text-base"
+              >
+                {loading ? (
+                  <>
+                    <Spinner className="h-4 w-4 !border-midnight/30 !border-t-midnight" />
+                    Please wait…
+                  </>
+                ) : mode === "login" ? (
+                  "Sign in"
+                ) : (
+                  "Create account"
+                )}
+              </button>
+            </form>
+          </div>
 
           <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-base font-semibold text-white disabled:opacity-60"
+            type="button"
+            onClick={() => {
+              setMode(mode === "login" ? "signup" : "login");
+              setError(null);
+              setNotice(null);
+            }}
+            className="mt-5 w-full text-center text-sm text-mist transition-colors hover:text-white"
           >
-            {loading
-              ? "Please wait…"
-              : mode === "login"
-                ? "Sign in"
-                : "Create account"}
+            {mode === "login" ? (
+              <>
+                New to Taqa?{" "}
+                <span className="font-semibold text-charge">Create an account</span>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <span className="font-semibold text-charge">Sign in</span>
+              </>
+            )}
           </button>
-        </form>
-
-        <button
-          type="button"
-          onClick={() => {
-            setMode(mode === "login" ? "signup" : "login");
-            setError(null);
-            setNotice(null);
-          }}
-          className="mt-4 w-full text-sm font-medium text-slate-700 underline"
-        >
-          {mode === "login"
-            ? "Need an account? Sign up"
-            : "Already have an account? Sign in"}
-        </button>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }

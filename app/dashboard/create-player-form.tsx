@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Spinner } from "@/components/ui/brand";
 
 export default function CreatePlayerForm({ academyId }: { academyId: string }) {
   const router = useRouter();
@@ -46,19 +47,18 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
     }
   }
 
-  const inputClass =
-    "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-base text-slate-900 outline-none focus:border-slate-900";
-
   return (
-    <section className="rounded-2xl bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-bold text-slate-900">Add a player</h2>
-      <p className="mt-1 text-sm text-slate-600">
-        Add as many players as you like. Each one gets their own meal plan.
+    <div className="tq-card p-6">
+      <h2 className="font-display text-2xl font-semibold text-white">
+        Add a player
+      </h2>
+      <p className="mt-1 text-sm text-mist">
+        Add as many athletes as you like. Each one gets their own plan.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div>
-          <label htmlFor="p-name" className="block text-sm font-medium text-slate-800">
+          <label htmlFor="p-name" className="tq-label">
             Name
           </label>
           <input
@@ -67,13 +67,14 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={inputClass}
+            className="tq-field"
+            placeholder="Full name"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="p-age" className="block text-sm font-medium text-slate-800">
+            <label htmlFor="p-age" className="tq-label">
               Age
             </label>
             <input
@@ -84,14 +85,11 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
               required
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className={inputClass}
+              className="tq-field"
             />
           </div>
           <div>
-            <label
-              htmlFor="p-weight"
-              className="block text-sm font-medium text-slate-800"
-            >
+            <label htmlFor="p-weight" className="tq-label">
               Weight (kg)
             </label>
             <input
@@ -102,16 +100,13 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
               required
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
-              className={inputClass}
+              className="tq-field"
             />
           </div>
         </div>
 
         <div>
-          <label
-            htmlFor="p-position"
-            className="block text-sm font-medium text-slate-800"
-          >
+          <label htmlFor="p-position" className="tq-label">
             Position
           </label>
           <input
@@ -121,15 +116,12 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
             value={position}
             onChange={(e) => setPosition(e.target.value)}
             placeholder="e.g. Midfielder"
-            className={inputClass}
+            className="tq-field"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="p-dietary"
-            className="block text-sm font-medium text-slate-800"
-          >
+          <label htmlFor="p-dietary" className="tq-label">
             Dietary restrictions
           </label>
           <textarea
@@ -138,20 +130,17 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
             value={dietary}
             onChange={(e) => setDietary(e.target.value)}
             placeholder="e.g. Vegetarian, no nuts. Leave blank if none."
-            className={inputClass}
+            className="tq-field resize-none"
           />
         </div>
 
         {error && (
-          <p
-            role="alert"
-            className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
-          >
+          <p role="alert" className="tq-alert-error">
             {error}
           </p>
         )}
         {savedName && (
-          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
+          <p className="tq-alert-ok">
             Added {savedName}. Add another below if you like.
           </p>
         )}
@@ -159,11 +148,18 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-base font-semibold text-white disabled:opacity-60"
+          className="tq-btn tq-btn-primary w-full py-3"
         >
-          {loading ? "Saving…" : "Add player"}
+          {loading ? (
+            <>
+              <Spinner className="h-4 w-4 !border-midnight/30 !border-t-midnight" />
+              Saving…
+            </>
+          ) : (
+            "Add player"
+          )}
         </button>
       </form>
-    </section>
+    </div>
   );
 }

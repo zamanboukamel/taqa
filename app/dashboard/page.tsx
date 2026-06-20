@@ -2,7 +2,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Academy, TrainingSchedule, Player } from "@/lib/types";
-import LogoutButton from "./logout-button";
+import { Stagger, StaggerItem } from "@/components/ui/motion";
+import DashboardShell from "./dashboard-shell";
 import CreateAcademyForm from "./create-academy-form";
 import ScheduleManager from "./schedule-manager";
 import CreatePlayerForm from "./create-player-form";
@@ -62,69 +63,98 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
-        <h1 className="text-lg font-bold text-slate-900">Taqa Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <span className="hidden text-sm text-slate-500 sm:inline">
-            {user.email}
-          </span>
-          <LogoutButton />
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-md space-y-6 px-4 py-6">
-        {!academy ? (
+    <DashboardShell email={user.email ?? ""}>
+      {!academy ? (
+        <div className="mx-auto max-w-md py-6">
+          <p className="eyebrow">Get started</p>
+          <h1 className="font-display mt-2 mb-6 text-3xl font-semibold text-white">
+            Set up your academy
+          </h1>
           <CreateAcademyForm ownerId={user.id} />
-        ) : (
-          <>
-            <section className="rounded-2xl bg-white p-6 shadow-sm">
-              <p className="text-sm text-slate-500">Academy</p>
-              <p className="text-xl font-bold text-slate-900">{academy.name}</p>
-              <p className="text-sm text-slate-600">{academy.sport_type}</p>
-            </section>
+        </div>
+      ) : (
+        <div className="space-y-10">
+          {/* ── Overview ─────────────────────────────────────────────── */}
+          <section id="overview" className="scroll-mt-20">
+            <p className="eyebrow">{academy.sport_type}</p>
+            <h1 className="font-display mt-2 text-4xl font-semibold text-white">
+              {academy.name}
+            </h1>
 
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <StatCard label="Players" value={players.length} />
+              <StatCard label="Plans ready" value={plannedIds.size} accent />
+              <StatCard
+                label="Awaiting plan"
+                value={players.length - plannedIds.size}
+              />
+              <StatCard label="Training days" value={schedules.length} />
+            </div>
+          </section>
+
+          {/* ── Schedule ─────────────────────────────────────────────── */}
+          <section id="schedule" className="scroll-mt-20">
             <ScheduleManager academyId={academy.id} schedules={schedules} />
+          </section>
 
-            <section>
-              <h2 className="mb-2 px-1 text-lg font-bold text-slate-900">
-                Players{players.length > 0 ? ` (${players.length})` : ""}
+          {/* ── Players ──────────────────────────────────────────────── */}
+          <section id="players" className="scroll-mt-20">
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 className="font-display text-2xl font-semibold text-white">
+                Players
               </h2>
+              {players.length > 0 && (
+                <span className="font-mono text-sm text-mist">
+                  {plannedIds.size}/{players.length} fuelled
+                </span>
+              )}
+            </div>
 
-              {players.length === 0 ? (
-                <p className="rounded-2xl bg-white px-4 py-6 text-center text-sm text-slate-500 shadow-sm">
-                  No players yet. Add your first one below.
+            {players.length === 0 ? (
+              <div className="tq-card px-6 py-12 text-center">
+                <p className="text-base font-semibold text-white">
+                  No players yet
                 </p>
-              ) : (
-                <ul className="space-y-4">
-                  {players.map((player) => {
-                    const hasPlan = plannedIds.has(player.id);
-                    return (
-                      <li
-                        key={player.id}
-                        className="rounded-2xl bg-white p-6 shadow-sm"
-                      >
+                <p className="mt-1 text-sm text-mist">
+                  Add your first athlete below to generate a plan.
+                </p>
+              </div>
+            ) : (
+              <Stagger className="grid gap-4 md:grid-cols-2">
+                {players.map((player) => {
+                  const hasPlan = plannedIds.has(player.id);
+                  return (
+                    <StaggerItem key={player.id}>
+                      <article className="tq-card group h-full p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-charge/50">
                         <div className="flex items-start justify-between gap-3">
-                          <p className="text-xl font-bold text-slate-900">
-                            {player.name}
-                          </p>
-                          {hasPlan && (
-                            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
-                              Plan ready
+                          <div className="flex items-center gap-3">
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-charge/15 font-mono text-sm font-semibold text-charge">
+                              {initials(player.name)}
                             </span>
-                          )}
+                            <div>
+                              <p className="text-lg font-semibold leading-tight text-white">
+                                {player.name}
+                              </p>
+                              <p className="text-xs text-mist">
+                                {player.position || "—"}
+                              </p>
+                            </div>
+                          </div>
+                          <StatusBadge ready={hasPlan} />
                         </div>
-                        <dl className="mt-2 grid grid-cols-2 gap-y-1 text-sm text-slate-700">
-                          <dt className="text-slate-500">Age</dt>
-                          <dd>{player.age ?? "—"}</dd>
-                          <dt className="text-slate-500">Weight</dt>
-                          <dd>
-                            {player.weight_kg ? `${player.weight_kg} kg` : "—"}
-                          </dd>
-                          <dt className="text-slate-500">Position</dt>
-                          <dd>{player.position || "—"}</dd>
-                          <dt className="text-slate-500">Dietary</dt>
-                          <dd>{player.dietary_restrictions || "None"}</dd>
+
+                        <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+                          <Stat label="Age" value={player.age ?? "—"} />
+                          <Stat
+                            label="Weight"
+                            value={
+                              player.weight_kg ? `${player.weight_kg}kg` : "—"
+                            }
+                          />
+                          <Stat
+                            label="Diet"
+                            value={player.dietary_restrictions ? "Custom" : "None"}
+                          />
                         </dl>
 
                         <GeneratePlanButton
@@ -137,17 +167,77 @@ export default async function DashboardPage() {
                             url={`${origin}/player/${player.access_token}`}
                           />
                         )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </section>
+                      </article>
+                    </StaggerItem>
+                  );
+                })}
+              </Stagger>
+            )}
+          </section>
 
+          {/* ── Add player ───────────────────────────────────────────── */}
+          <section id="add-player" className="scroll-mt-20">
             <CreatePlayerForm academyId={academy.id} />
-          </>
-        )}
-      </div>
-    </main>
+          </section>
+        </div>
+      )}
+    </DashboardShell>
   );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
+  return (
+    <div className="tq-card p-4">
+      <p
+        className={`font-display text-3xl font-semibold ${
+          accent ? "text-charge" : "text-white"
+        }`}
+      >
+        {value}
+      </p>
+      <p className="mt-1 text-xs uppercase tracking-wide text-mist">{label}</p>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-lg bg-black/20 py-2">
+      <p className="font-mono text-sm font-semibold text-white">{value}</p>
+      <p className="text-[0.65rem] uppercase tracking-wide text-mist-2">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+function StatusBadge({ ready }: { ready: boolean }) {
+  return ready ? (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-charge/15 px-2.5 py-1 text-xs font-semibold text-volt">
+      <span className="h-1.5 w-1.5 rounded-full bg-volt" />
+      Plan ready
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs font-semibold text-mist">
+      <span className="h-1.5 w-1.5 rounded-full bg-mist-2" />
+      No plan
+    </span>
+  );
+}
+
+function initials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
 }

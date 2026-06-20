@@ -1,19 +1,292 @@
 @import "tailwindcss";
 
-/* High-contrast, light base. We intentionally do NOT auto-switch to dark mode:
-   the player meal-plan view must stay readable in direct sunlight. */
-:root {
-  --background: #ffffff;
-  --foreground: #0f172a; /* slate-900 */
+/* ─────────────────────────────────────────────────────────────────────────
+   TAQA — "Charge" design system
+   Taqa (طاقة) = energy. The brand is built around fuel, charge, and motion.
+
+   Two honest contexts, one identity:
+   • Dark "command center" — marketing, login, dashboard (indoors, on a laptop)
+   • Daylight high-contrast — the player meal plan (outdoors, in the sun)
+     The player view intentionally stays light so it reads in direct sunlight.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Dark surfaces — stadium at night, green undertone (never flat black) */
+  --color-midnight: #0b1410;
+  --color-midnight-2: #0e1a14;
+  --color-pitch: #0f1d17;
+  --color-pitch-line: #1c2e25;
+
+  /* Charge — the brand signal */
+  --color-charge: #10b981;
+  --color-charge-deep: #0a8f6a;
+  --color-volt: #34d399;
+
+  /* Fuel — warm energy spark, used sparingly */
+  --color-fuel: #f6b25a;
+  --color-fuel-deep: #e8913a;
+
+  /* Daylight surfaces — player view */
+  --color-bone: #f5f6f3;
+  --color-ink: #0b1410;
+  --color-mist: #93a39a; /* muted text on dark */
+  --color-mist-2: #5e6f66;
+
+  /* Type roles */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Motion */
+  --ease-out-back: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+/* Base ─────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, Arial, sans-serif;
+  background: var(--color-midnight);
+  color: #e8efe9;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection + focus carry the brand color */
+::selection {
+  background: var(--color-charge);
+  color: var(--color-midnight);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-volt);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Display type tightened for headline impact */
+.font-display {
+  font-feature-settings: "ss01";
+  letter-spacing: -0.02em;
+}
+
+/* The recurring eyebrow label — mono, spaced, charged */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-charge);
+}
+
+/* Tabular numerals for all data (calories, stats, counters) */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Component classes ──────────────────────────────────────────────────── */
+
+/* Buttons */
+.tq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+  transition:
+    transform 0.18s var(--ease-out-back),
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    opacity 0.18s ease;
+  will-change: transform;
+}
+.tq-btn:active {
+  transform: scale(0.97);
+}
+.tq-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Primary = charged. Carries an emerald glow that intensifies on hover. */
+.tq-btn-primary {
+  background: linear-gradient(180deg, var(--color-volt), var(--color-charge));
+  color: var(--color-midnight);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
+    0 8px 24px -8px rgba(16, 185, 129, 0.55);
+}
+.tq-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
+    0 14px 32px -8px rgba(16, 185, 129, 0.75);
+}
+
+/* Fuel = the power action (Generate). Warm, unmistakable. */
+.tq-btn-fuel {
+  background: linear-gradient(180deg, var(--color-fuel), var(--color-fuel-deep));
+  color: #2b1a06;
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
+    0 8px 24px -8px rgba(246, 178, 90, 0.6);
+}
+.tq-btn-fuel:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.35) inset,
+    0 16px 36px -8px rgba(246, 178, 90, 0.8);
+}
+
+/* Ghost = quiet secondary on dark */
+.tq-btn-ghost {
+  background: rgba(255, 255, 255, 0.04);
+  color: #d9e3dd;
+  border: 1px solid var(--color-pitch-line);
+}
+.tq-btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-charge);
+  color: #fff;
+}
+
+/* Cards on dark */
+.tq-card {
+  background: linear-gradient(180deg, var(--color-pitch), var(--color-midnight-2));
+  border: 1px solid var(--color-pitch-line);
+  border-radius: 1.25rem;
+}
+
+/* Form fields on dark */
+.tq-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #c6d2cb;
+  margin-bottom: 0.4rem;
+}
+.tq-field {
+  width: 100%;
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--color-pitch-line);
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  color: #f0f5f2;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+.tq-field::placeholder {
+  color: #5e6f66;
+}
+.tq-field:focus {
+  outline: none;
+  border-color: var(--color-charge);
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.16);
+}
+.tq-field:disabled {
+  opacity: 0.5;
+}
+
+/* Inline status messages */
+.tq-alert-error {
+  border-radius: 0.75rem;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: #fda4af;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.tq-alert-ok {
+  border-radius: 0.75rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--color-volt);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ── Signature texture: faint pitch grid, like stadium turf lines ───────── */
+.turf-grid {
+  background-image:
+    linear-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Radial glow used behind hero elements */
+.charge-glow {
+  background: radial-gradient(
+    60% 60% at 50% 40%,
+    rgba(16, 185, 129, 0.28),
+    transparent 70%
+  );
+}
+
+/* ── Keyframes ──────────────────────────────────────────────────────────── */
+@keyframes tq-sweep {
+  0% { background-position: -150% 0; }
+  100% { background-position: 250% 0; }
+}
+@keyframes tq-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes tq-pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+@keyframes tq-spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: tq-float 6s ease-in-out infinite;
+}
+.animate-pulse-ring {
+  animation: tq-pulse-ring 2.2s ease-out infinite;
+}
+
+/* Branded shimmer for skeletons / charging bars */
+.tq-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(52, 211, 153, 0.35),
+    transparent
+  );
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: tq-sweep 1.6s ease-in-out infinite;
+}
+
+/* ── Respect reduced motion everywhere ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

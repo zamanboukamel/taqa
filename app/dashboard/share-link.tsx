@@ -20,26 +20,54 @@ export default function ShareLink({ url }: { url: string }) {
   }
 
   return (
-    <div className="mt-3 rounded-lg bg-slate-50 p-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-        Player link
-      </p>
-      <div className="mt-1 flex items-center gap-2">
+    <div className="mt-3 rounded-xl border border-pitch-line bg-black/25 p-3">
+      <div className="flex items-center justify-between">
+        <p className="font-mono text-xs uppercase tracking-widest text-charge">
+          Player link
+        </p>
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-700 underline"
+          className="text-xs font-medium text-mist transition-colors hover:text-white"
         >
-          {url}
+          Open ↗
         </a>
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <code className="min-w-0 flex-1 truncate rounded-lg bg-midnight px-2.5 py-2 text-xs text-mist">
+          {url}
+        </code>
         <button
           onClick={copy}
-          className="shrink-0 rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white"
+          className={`tq-btn shrink-0 !px-3 !py-2 text-xs transition-colors ${
+            copied ? "tq-btn-primary" : "tq-btn-ghost"
+          }`}
         >
-          {copied ? "Copied" : "Copy"}
+          {copied ? (
+            <>
+              <Check />
+              Copied
+            </>
+          ) : (
+            "Copy"
+          )}
         </button>
       </div>
     </div>
+  );
+}
+
+function Check() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M5 13l4 4L19 7"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
