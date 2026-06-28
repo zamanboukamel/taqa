@@ -12,13 +12,17 @@ import {
   useReducedMotion,
 } from "motion/react";
 import { Mark } from "./brand";
+import { useI18n } from "@/components/i18n/language-provider";
 
 // A week of sample plan, Sunday-first (GCC), with GCC-flavoured meals.
+// `name` is the English day key (mapped to the localized name at render).
+// Meal dishes carry both languages so the showcase reads natively in either.
+type Meal = { en: string; ar: string };
 type Day = {
   name: string;
   training: boolean;
   cal: number;
-  meals: [string, string][];
+  meals: Meal[];
 };
 
 const WEEK: Day[] = [
@@ -27,9 +31,9 @@ const WEEK: Day[] = [
     training: true,
     cal: 3120,
     meals: [
-      ["Breakfast", "Shakshuka, oats, dates"],
-      ["Lunch", "Grilled chicken, freekeh, salad"],
-      ["Dinner", "Salmon, sweet potato, greens"],
+      { en: "Shakshuka, oats, dates", ar: "شكشوكة، شوفان، تمر" },
+      { en: "Grilled chicken, freekeh, salad", ar: "دجاج مشوي، فريكة، سلطة" },
+      { en: "Salmon, sweet potato, greens", ar: "سلمون، بطاطا حلوة، خضار" },
     ],
   },
   {
@@ -37,9 +41,9 @@ const WEEK: Day[] = [
     training: true,
     cal: 3240,
     meals: [
-      ["Breakfast", "Eggs, labneh, wholegrain toast"],
-      ["Lunch", "Beef kofta, rice, tabbouleh"],
-      ["Dinner", "Sea bass, quinoa, roast veg"],
+      { en: "Eggs, labneh, wholegrain toast", ar: "بيض، لبنة، خبز كامل محمّص" },
+      { en: "Beef kofta, rice, tabbouleh", ar: "كفتة لحم، أرز، تبولة" },
+      { en: "Sea bass, quinoa, roast veg", ar: "قاروص، كينوا، خضار مشوية" },
     ],
   },
   {
@@ -47,9 +51,9 @@ const WEEK: Day[] = [
     training: false,
     cal: 2480,
     meals: [
-      ["Breakfast", "Greek yoghurt, berries, nuts"],
-      ["Lunch", "Lentil soup, chicken wrap"],
-      ["Dinner", "Grilled halloumi, big salad"],
+      { en: "Greek yoghurt, berries, nuts", ar: "زبادي يوناني، توت، مكسّرات" },
+      { en: "Lentil soup, chicken wrap", ar: "شوربة عدس، لفافة دجاج" },
+      { en: "Grilled halloumi, big salad", ar: "حلوم مشوي، سلطة كبيرة" },
     ],
   },
   {
@@ -57,9 +61,9 @@ const WEEK: Day[] = [
     training: true,
     cal: 3300,
     meals: [
-      ["Breakfast", "Oats, banana, peanut butter"],
-      ["Lunch", "Chicken shawarma, rice, hummus"],
-      ["Dinner", "Salmon, bulgur, grilled veg"],
+      { en: "Oats, banana, peanut butter", ar: "شوفان، موز، زبدة فول سوداني" },
+      { en: "Chicken shawarma, rice, hummus", ar: "شاورما دجاج، أرز، حمّص" },
+      { en: "Salmon, bulgur, grilled veg", ar: "سلمون، برغل، خضار مشوية" },
     ],
   },
   {
@@ -67,9 +71,9 @@ const WEEK: Day[] = [
     training: true,
     cal: 3180,
     meals: [
-      ["Breakfast", "Foul medames, eggs, bread"],
-      ["Lunch", "Turkey, sweet potato, greens"],
-      ["Dinner", "Grilled chicken, pasta, salad"],
+      { en: "Foul medames, eggs, bread", ar: "فول مدمس، بيض، خبز" },
+      { en: "Turkey, sweet potato, greens", ar: "ديك رومي، بطاطا حلوة، خضار" },
+      { en: "Grilled chicken, pasta, salad", ar: "دجاج مشوي، معكرونة، سلطة" },
     ],
   },
   {
@@ -77,9 +81,9 @@ const WEEK: Day[] = [
     training: false,
     cal: 2420,
     meals: [
-      ["Breakfast", "Smoothie bowl, seeds"],
-      ["Lunch", "Machboos (light), salad"],
-      ["Dinner", "Baked cod, vegetables"],
+      { en: "Smoothie bowl, seeds", ar: "وعاء سموذي، بذور" },
+      { en: "Machboos (light), salad", ar: "مجبوس (خفيف)، سلطة" },
+      { en: "Baked cod, vegetables", ar: "سمك القد بالفرن، خضار" },
     ],
   },
   {
@@ -87,9 +91,9 @@ const WEEK: Day[] = [
     training: true,
     cal: 3450,
     meals: [
-      ["Breakfast", "Pancakes, eggs, fruit"],
-      ["Lunch", "Steak, rice, grilled veg"],
-      ["Dinner", "Chicken, potatoes, greens"],
+      { en: "Pancakes, eggs, fruit", ar: "فطائر، بيض، فاكهة" },
+      { en: "Steak, rice, grilled veg", ar: "ستيك، أرز، خضار مشوية" },
+      { en: "Chicken, potatoes, greens", ar: "دجاج، بطاطا، خضار" },
     ],
   },
 ];
@@ -97,9 +101,12 @@ const WEEK: Day[] = [
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function HeroShowcase() {
+  const { locale, t } = useI18n();
   const reduce = useReducedMotion();
   const [i, setI] = useState(0);
   const day = WEEK[i];
+  // The three meal category labels, in order, for the localized UI.
+  const mealLabels = [t.mealCard.breakfast, t.mealCard.lunch, t.mealCard.dinner];
 
   // Auto-advance through the week (paused for reduced motion).
   useEffect(() => {
@@ -191,10 +198,10 @@ export function HeroShowcase() {
                     transition={{ duration: 0.45, ease: EASE }}
                   >
                     <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/75">
-                      {day.training ? "Training Day" : "Rest Day"}
+                      {day.training ? t.mealCard.trainingDay : t.mealCard.restDay}
                     </p>
                     <h3 className="font-display text-2xl font-semibold leading-tight text-white">
-                      {day.name}
+                      {t.days[day.name as keyof typeof t.days] ?? day.name}
                     </h3>
                   </motion.div>
                 </AnimatePresence>
@@ -207,10 +214,10 @@ export function HeroShowcase() {
           <div className="px-5 py-5">
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-sm text-mist">Target fuel</p>
+                <p className="text-sm text-mist">{t.hero.targetFuel}</p>
                 <span className="tabular text-3xl font-semibold text-white">
                   {cal.toLocaleString()}{" "}
-                  <span className="text-base text-mist">kcal</span>
+                  <span className="text-base text-mist">{t.hero.kcal}</span>
                 </span>
               </div>
               <span
@@ -220,7 +227,7 @@ export function HeroShowcase() {
                     : "bg-white/8 text-mist"
                 }`}
               >
-                {day.training ? "Fuel" : "Recover"}
+                {day.training ? t.hero.fuel : t.hero.recover}
               </span>
             </div>
 
@@ -243,12 +250,14 @@ export function HeroShowcase() {
                   transition={{ duration: 0.4, ease: EASE }}
                   className="space-y-3"
                 >
-                  {day.meals.map(([label, text]) => (
-                    <div key={label} className="border-t border-pitch-line pt-3">
+                  {day.meals.map((meal, idx) => (
+                    <div key={idx} className="border-t border-pitch-line pt-3">
                       <p className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-mist-2">
-                        {label}
+                        {mealLabels[idx]}
                       </p>
-                      <p className="mt-0.5 text-sm text-white/90">{text}</p>
+                      <p className="mt-0.5 text-sm text-white/90">
+                        {locale === "ar" ? meal.ar : meal.en}
+                      </p>
                     </div>
                   ))}
                 </motion.div>
@@ -275,7 +284,7 @@ export function HeroShowcase() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-charge opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-charge" />
               </span>
-              AI-generated · day {i + 1} of 7
+              {t.hero.aiGenerated} · {t.hero.day} {i + 1} {t.hero.of} 7
             </p>
           </div>
 

@@ -4,14 +4,17 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Wordmark, Mark } from "@/components/ui/brand";
+import { useI18n } from "@/components/i18n/language-provider";
+import { LanguageToggle } from "@/components/i18n/language-toggle";
 import LogoutButton from "./logout-button";
 
+// `key` indexes the dictionary's nav labels; href/icon stay here.
 const NAV = [
-  { href: "#overview", label: "Overview", icon: <IconGrid /> },
-  { href: "#schedule", label: "Schedule", icon: <IconCalendar /> },
-  { href: "#players", label: "Players", icon: <IconUsers /> },
-  { href: "#add-player", label: "Add player", icon: <IconPlus /> },
-];
+  { href: "#overview", key: "overview", icon: <IconGrid /> },
+  { href: "#schedule", key: "schedule", icon: <IconCalendar /> },
+  { href: "#players", key: "players", icon: <IconUsers /> },
+  { href: "#add-player", key: "addPlayer", icon: <IconPlus /> },
+] as const;
 
 export default function DashboardShell({
   email,
@@ -20,13 +23,14 @@ export default function DashboardShell({
   email: string;
   children: ReactNode;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(true);
 
   return (
     <div className="flex min-h-screen bg-midnight text-white">
       {/* ── Sidebar (desktop) ──────────────────────────────────────────── */}
       <aside
-        className={`relative hidden shrink-0 flex-col border-r border-pitch-line bg-midnight-2/50 transition-[width] duration-300 lg:flex ${
+        className={`relative hidden shrink-0 flex-col border-e border-pitch-line bg-midnight-2/50 transition-[width] duration-300 lg:flex ${
           open ? "w-60" : "w-[72px]"
         }`}
       >
@@ -41,13 +45,13 @@ export default function DashboardShell({
             <a
               key={item.href}
               href={item.href}
-              title={item.label}
+              title={t.nav[item.key]}
               className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-mist transition-colors hover:bg-white/5 hover:text-white"
             >
               <span className="shrink-0 text-mist transition-colors group-hover:text-charge">
                 {item.icon}
               </span>
-              {open && <span className="truncate">{item.label}</span>}
+              {open && <span className="truncate">{t.nav[item.key]}</span>}
             </a>
           ))}
         </nav>
@@ -56,12 +60,12 @@ export default function DashboardShell({
           <button
             onClick={() => setOpen((v) => !v)}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-mist transition-colors hover:bg-white/5 hover:text-white"
-            aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+            aria-label={open ? t.nav.collapseSidebar : t.nav.expandSidebar}
           >
             <span className={`transition-transform ${open ? "" : "rotate-180"}`}>
               <IconChevron />
             </span>
-            {open && <span>Collapse</span>}
+            {open && <span>{t.nav.collapse}</span>}
           </button>
         </div>
       </aside>
@@ -75,12 +79,13 @@ export default function DashboardShell({
             </Link>
           </div>
           <p className="hidden font-display text-lg font-semibold lg:block">
-            Dashboard
+            {t.nav.dashboard}
           </p>
           <div className="flex items-center gap-3">
             <span className="hidden max-w-[180px] truncate text-sm text-mist sm:inline">
               {email}
             </span>
+            <LanguageToggle />
             <LogoutButton />
           </div>
         </header>
@@ -130,7 +135,15 @@ function IconPlus() {
 }
 function IconChevron() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    // Mirror the chevron in RTL so it always points toward the collapse edge.
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className="rtl:-scale-x-100"
+    >
       <path d="M14 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );

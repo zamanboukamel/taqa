@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/brand";
+import { useI18n } from "@/components/i18n/language-provider";
 
 export default function GeneratePlanButton({
   playerId,
@@ -12,6 +13,7 @@ export default function GeneratePlanButton({
   hasPlan: boolean;
 }) {
   const router = useRouter();
+  const { locale, t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,13 +24,14 @@ export default function GeneratePlanButton({
       const res = await fetch("/api/generate-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId }),
+        // Tell the server which language to write the plan content in.
+        body: JSON.stringify({ playerId, locale }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
-      if (!res.ok) throw new Error(data.error || "Generation failed.");
+      if (!res.ok) throw new Error(data.error || t.generate.failed);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Generation failed.");
+      setError(e instanceof Error ? e.message : t.generate.failed);
     } finally {
       setLoading(false);
     }
@@ -46,14 +49,14 @@ export default function GeneratePlanButton({
         {loading ? (
           <>
             <Spinner className="h-4 w-4" />
-            Generating…
+            {t.generate.generating}
           </>
         ) : hasPlan ? (
-          "Regenerate plan"
+          t.generate.regenerateBtn
         ) : (
           <>
             <Bolt />
-            Generate meal plan
+            {t.generate.generateBtn}
           </>
         )}
       </button>
@@ -61,11 +64,9 @@ export default function GeneratePlanButton({
       {loading && (
         <div className="mt-3 overflow-hidden rounded-xl border border-pitch-line bg-black/20 px-4 py-3">
           <p className="text-sm font-medium text-fuel">
-            Building a training-aware week…
+            {t.generate.buildingWeek}
           </p>
-          <p className="mt-0.5 text-xs text-mist">
-            This usually takes 10–20 seconds.
-          </p>
+          <p className="mt-0.5 text-xs text-mist">{t.generate.usuallyTakes}</p>
           <div className="mt-3 h-1 overflow-hidden rounded-full bg-pitch-line">
             <div className="tq-shimmer h-full w-full" />
           </div>

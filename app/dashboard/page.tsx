@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Academy, TrainingSchedule, Player } from "@/lib/types";
 import { Stagger, StaggerItem } from "@/components/ui/motion";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary, localizeSport } from "@/lib/i18n/dictionaries";
 import DashboardShell from "./dashboard-shell";
 import CreateAcademyForm from "./create-academy-form";
 import ScheduleManager from "./schedule-manager";
@@ -16,6 +18,9 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const locale = await getLocale();
+  const t = getDictionary(locale);
 
   // Build the public origin server-side so the player link is absolute and
   // identical on server and client (no hydration mismatch in ShareLink).
@@ -66,9 +71,9 @@ export default async function DashboardPage() {
     <DashboardShell email={user.email ?? ""}>
       {!academy ? (
         <div className="mx-auto max-w-md py-6">
-          <p className="eyebrow">Get started</p>
+          <p className="eyebrow">{t.dashboard.getStarted}</p>
           <h1 className="font-display mt-2 mb-6 text-3xl font-semibold text-white">
-            Set up your academy
+            {t.dashboard.setUpAcademy}
           </h1>
           <CreateAcademyForm ownerId={user.id} />
         </div>
@@ -76,19 +81,26 @@ export default async function DashboardPage() {
         <div className="space-y-10">
           {/* ── Overview ─────────────────────────────────────────────── */}
           <section id="overview" className="scroll-mt-20">
-            <p className="eyebrow">{academy.sport_type}</p>
+            <p className="eyebrow">{localizeSport(academy.sport_type, t)}</p>
             <h1 className="font-display mt-2 text-4xl font-semibold text-white">
               {academy.name}
             </h1>
 
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <StatCard label="Players" value={players.length} />
-              <StatCard label="Plans ready" value={plannedIds.size} accent />
+              <StatCard label={t.dashboard.players} value={players.length} />
               <StatCard
-                label="Awaiting plan"
+                label={t.dashboard.plansReady}
+                value={plannedIds.size}
+                accent
+              />
+              <StatCard
+                label={t.dashboard.awaitingPlan}
                 value={players.length - plannedIds.size}
               />
-              <StatCard label="Training days" value={schedules.length} />
+              <StatCard
+                label={t.dashboard.trainingDays}
+                value={schedules.length}
+              />
             </div>
           </section>
 
@@ -101,11 +113,11 @@ export default async function DashboardPage() {
           <section id="players" className="scroll-mt-20">
             <div className="mb-4 flex items-baseline justify-between">
               <h2 className="font-display text-2xl font-semibold text-white">
-                Players
+                {t.dashboard.players}
               </h2>
               {players.length > 0 && (
                 <span className="font-mono text-sm text-mist">
-                  {plannedIds.size}/{players.length} fuelled
+                  {plannedIds.size}/{players.length} {t.dashboard.fuelled}
                 </span>
               )}
             </div>
@@ -113,10 +125,10 @@ export default async function DashboardPage() {
             {players.length === 0 ? (
               <div className="tq-card px-6 py-12 text-center">
                 <p className="text-base font-semibold text-white">
-                  No players yet
+                  {t.dashboard.noPlayersYet}
                 </p>
                 <p className="mt-1 text-sm text-mist">
-                  Add your first athlete below to generate a plan.
+                  {t.dashboard.addFirstAthlete}
                 </p>
               </div>
             ) : (
@@ -140,20 +152,31 @@ export default async function DashboardPage() {
                               </p>
                             </div>
                           </div>
-                          <StatusBadge ready={hasPlan} />
+                          <StatusBadge
+                            ready={hasPlan}
+                            readyLabel={t.dashboard.planReady}
+                            noPlanLabel={t.dashboard.noPlan}
+                          />
                         </div>
 
                         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
-                          <Stat label="Age" value={player.age ?? "—"} />
                           <Stat
-                            label="Weight"
+                            label={t.dashboard.statAge}
+                            value={player.age ?? "—"}
+                          />
+                          <Stat
+                            label={t.dashboard.statWeight}
                             value={
                               player.weight_kg ? `${player.weight_kg}kg` : "—"
                             }
                           />
                           <Stat
-                            label="Diet"
-                            value={player.dietary_restrictions ? "Custom" : "None"}
+                            label={t.dashboard.statDiet}
+                            value={
+                              player.dietary_restrictions
+                                ? t.dashboard.dietCustom
+                                : t.dashboard.dietNone
+                            }
                           />
                         </dl>
 
@@ -219,16 +242,24 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function StatusBadge({ ready }: { ready: boolean }) {
+function StatusBadge({
+  ready,
+  readyLabel,
+  noPlanLabel,
+}: {
+  ready: boolean;
+  readyLabel: string;
+  noPlanLabel: string;
+}) {
   return ready ? (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-charge/15 px-2.5 py-1 text-xs font-semibold text-volt">
       <span className="h-1.5 w-1.5 rounded-full bg-volt" />
-      Plan ready
+      {readyLabel}
     </span>
   ) : (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs font-semibold text-mist">
       <span className="h-1.5 w-1.5 rounded-full bg-mist-2" />
-      No plan
+      {noPlanLabel}
     </span>
   );
 }

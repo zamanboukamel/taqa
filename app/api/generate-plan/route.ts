@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
@@ -48,8 +49,12 @@ function isValidPlan(obj: unknown): obj is MealPlanJson {
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as { playerId?: string };
+    const body = (await req.json()) as { playerId?: string; locale?: string };
     const playerId = body.playerId;
+    // Which language to write the plan CONTENT in. Structural fields (day names,
+    // the Training/Rest label, JSON keys) always stay English so validation,
+    // sorting and styling keep working regardless of language.
+    const wantArabic = body.locale === "ar";
     if (!playerId) {
       return NextResponse.json({ error: "Missing playerId." }, { status: 400 });
     }
@@ -112,6 +117,11 @@ Requirements:
 - Every meal string must include realistic portion sizes.
 - estimated_calories is a number: total kcal for that whole day.
 - focus_note is a single short line.
+${
+  wantArabic
+    ? `- LANGUAGE: Write breakfast, lunch, dinner, snacks and focus_note in clear, natural Modern Standard Arabic. Keep the JSON keys in English, and keep the "day" values (Sunday…Saturday) and the "label" values ("Training Day" / "Rest Day") in English EXACTLY as written here — do not translate those.`
+    : `- LANGUAGE: Write all meal descriptions and focus_note in English.`
+}
 
 Return ONLY valid JSON, no markdown, no code fences, no commentary, in exactly this shape:
 {"days":[{"day":"Sunday","label":"Training Day","breakfast":"...","lunch":"...","dinner":"...","snacks":"...","estimated_calories":2800,"focus_note":"..."}]}`;

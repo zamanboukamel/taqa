@@ -17,7 +17,29 @@ function Meal({ label, text }: { label: string; text: string }) {
   );
 }
 
-export function DayCard({ day }: { day: MealPlanDay }) {
+// `dayName` and `labels` arrive already translated from the page, so the card
+// stays language-agnostic. `day.label`/`day.day` keep their English enum values
+// (used for styling + sorting) regardless of UI language.
+type MealCardLabels = {
+  trainingDay: string;
+  restDay: string;
+  kcalTarget: string;
+  breakfast: string;
+  lunch: string;
+  dinner: string;
+  snacks: string;
+  coachNote: string;
+};
+
+export function DayCard({
+  day,
+  dayName,
+  labels,
+}: {
+  day: MealPlanDay;
+  dayName: string;
+  labels: MealCardLabels;
+}) {
   const isTraining = day.label === "Training Day";
   return (
     <section className="overflow-hidden rounded-3xl bg-white shadow-[0_14px_44px_-18px_rgba(11,20,16,0.35)] ring-1 ring-black/5">
@@ -34,10 +56,10 @@ export function DayCard({ day }: { day: MealPlanDay }) {
         <div className="relative flex items-start justify-between gap-4">
           <div>
             <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/75">
-              {day.label}
+              {isTraining ? labels.trainingDay : labels.restDay}
             </p>
             <h2 className="font-display text-3xl font-semibold text-white">
-              {day.day}
+              {dayName}
             </h2>
           </div>
 
@@ -47,17 +69,17 @@ export function DayCard({ day }: { day: MealPlanDay }) {
               <CountUp value={day.estimated_calories} />
             </p>
             <p className="mt-1 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/70">
-              kcal target
+              {labels.kcalTarget}
             </p>
           </div>
         </div>
       </div>
 
       <div className="px-5 py-4">
-        <Meal label="Breakfast" text={day.breakfast} />
-        <Meal label="Lunch" text={day.lunch} />
-        <Meal label="Dinner" text={day.dinner} />
-        <Meal label="Snacks" text={day.snacks} />
+        <Meal label={labels.breakfast} text={day.breakfast} />
+        <Meal label={labels.lunch} text={day.lunch} />
+        <Meal label={labels.dinner} text={day.dinner} />
+        <Meal label={labels.snacks} text={day.snacks} />
       </div>
 
       {day.focus_note && (
@@ -69,7 +91,7 @@ export function DayCard({ day }: { day: MealPlanDay }) {
           }`}
         >
           <p className="font-mono text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-charge-deep">
-            Coach&apos;s note
+            {labels.coachNote}
           </p>
           <p className="mt-1 text-[0.95rem] font-medium italic leading-snug text-slate-800">
             {day.focus_note}

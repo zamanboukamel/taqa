@@ -1,0 +1,537 @@
+// All user-facing copy, in English and Arabic.
+//
+// `en` is the source of truth for the SHAPE; `ar: Dictionary` forces the Arabic
+// dictionary to have exactly the same keys (TypeScript errors if one drifts).
+// Arabic is Modern Standard Arabic, written for a GCC sports-academy audience.
+
+import type { Locale } from "./config";
+
+const en = {
+  common: {
+    signIn: "Sign in",
+    openDashboard: "Open dashboard",
+    startFree: "Start free",
+    howItWorks: "How it works",
+    pleaseWait: "Please wait…",
+    saving: "Saving…",
+  },
+  toggle: {
+    // Label shown ON the button = the language you'll switch TO.
+    switchTo: "العربية",
+    ariaLabel: "Switch language",
+  },
+  nav: {
+    overview: "Overview",
+    schedule: "Schedule",
+    players: "Players",
+    addPlayer: "Add player",
+    dashboard: "Dashboard",
+    collapse: "Collapse",
+    collapseSidebar: "Collapse sidebar",
+    expandSidebar: "Expand sidebar",
+    signOut: "Sign out",
+    signingOut: "Signing out…",
+  },
+  home: {
+    heroEyebrow: "AI nutrition · GCC academies",
+    heroTitleA: "Fuel",
+    heroTitleB: "the",
+    heroTitleHighlight: "work",
+    heroBody:
+      "Taqa turns each athlete's training week into a personalised, AI-built nutrition plan — and hands it to them on a single private link. No app to install, no login to remember.",
+    powerBarCaption: "طاقة — energy, on every plate",
+    stats: [
+      { big: "7-day", small: "plans per athlete, every week" },
+      { big: "<30s", small: "to generate a full plan" },
+      { big: "1 link", small: "players open — no app, no login" },
+    ],
+    whyEyebrow: "Why Taqa",
+    whyTitle:
+      "Academy-grade nutrition, without the dietitian's waiting list.",
+    features: [
+      {
+        title: "Personalised per athlete",
+        body: "Age, weight, position and dietary needs shape every plate — not a one-size template.",
+      },
+      {
+        title: "Powered by Claude",
+        body: "Anthropic's model drafts a structured, academy-grade week in seconds.",
+      },
+      {
+        title: "Built around training",
+        body: "Training days fuel performance, rest days steer recovery. The plan knows the difference.",
+      },
+      {
+        title: "One link to share",
+        body: "Each athlete opens their plan on a private link. Nothing to install, nothing to log in to.",
+      },
+    ],
+    howEyebrow: "How it works",
+    howTitle: "Three steps from squad list to fuelled.",
+    steps: [
+      {
+        title: "Add your squad",
+        body: "Create your academy, set the weekly training schedule, and add as many players as you like.",
+      },
+      {
+        title: "Generate",
+        body: "One tap builds a full 7-day, training-aware nutrition plan for each athlete.",
+      },
+      {
+        title: "Share",
+        body: "Send every player their private link. They see exactly what to eat, day by day.",
+      },
+    ],
+    proofEyebrow: "From the touchline",
+    proofTitle: "Coaches who stopped guessing.",
+    quotes: [
+      {
+        quote: "My U17s finally eat for their sessions, not against them.",
+        name: "Yousef Al-Marri",
+        role: "Academy Coach · Doha",
+      },
+      {
+        quote:
+          "I set the schedule once and every player has a plan by morning.",
+        name: "Sara Haddad",
+        role: "Performance Lead · Dubai",
+      },
+      {
+        quote:
+          "Parents trust it because it looks like a real programme, not a guess.",
+        name: "Khalid Nasser",
+        role: "Director · Riyadh",
+      },
+    ],
+    ctaTitle: "Give every athlete a plan as serious as their training.",
+    footerTagline: "Taqa · Eat for your training",
+    footerSignin: "Director sign in →",
+  },
+  login: {
+    brandEyebrow: "طاقة · energy",
+    brandTitleA: "Every athlete,",
+    brandTitleB: "fuelled for the work.",
+    brandBody:
+      "Sign in to build training-aware nutrition plans and share them with your squad in a single tap.",
+    brandFooter: "AI nutrition for GCC sports academies",
+    welcomeBack: "Welcome back",
+    createAccountTitle: "Create your account",
+    directorSignIn: "Director sign in",
+    startFuelling: "Start fuelling your athletes",
+    email: "Email",
+    password: "Password",
+    atLeast6: "At least 6 characters.",
+    signInBtn: "Sign in",
+    createAccountBtn: "Create account",
+    newToTaqa: "New to Taqa?",
+    createOne: "Create an account",
+    haveAccount: "Already have an account?",
+    accountCreatedNotice:
+      "Account created. If email confirmation is enabled, check your inbox, then log in.",
+    somethingWrong: "Something went wrong.",
+  },
+  dashboard: {
+    getStarted: "Get started",
+    setUpAcademy: "Set up your academy",
+    players: "Players",
+    plansReady: "Plans ready",
+    awaitingPlan: "Awaiting plan",
+    trainingDays: "Training days",
+    fuelled: "fuelled",
+    noPlayersYet: "No players yet",
+    addFirstAthlete: "Add your first athlete below to generate a plan.",
+    statAge: "Age",
+    statWeight: "Weight",
+    statDiet: "Diet",
+    dietCustom: "Custom",
+    dietNone: "None",
+    planReady: "Plan ready",
+    noPlan: "No plan",
+  },
+  academyForm: {
+    title: "Create your academy",
+    subtitle: "You haven't set up an academy yet. Add it to get started.",
+    nameLabel: "Academy name",
+    namePlaceholder: "e.g. Riverside Football Academy",
+    sportLabel: "Sport",
+    sportPlaceholder: "Choose a sport…",
+    otherSport: "Other…",
+    otherSportPlaceholder: "Enter your sport",
+    chooseSport: "Please choose a sport.",
+    couldNotSave: "Could not save academy.",
+    createBtn: "Create academy",
+  },
+  sports: {
+    Football: "Football",
+    Padel: "Padel",
+    Basketball: "Basketball",
+    Swimming: "Swimming",
+    "Athletics (Track & Field)": "Athletics (Track & Field)",
+    Tennis: "Tennis",
+    Volleyball: "Volleyball",
+    Handball: "Handball",
+    Cricket: "Cricket",
+    Rugby: "Rugby",
+    "Martial Arts": "Martial Arts",
+    Cycling: "Cycling",
+    Equestrian: "Equestrian",
+  },
+  playerForm: {
+    title: "Add a player",
+    subtitle: "Add as many athletes as you like. Each one gets their own plan.",
+    nameLabel: "Name",
+    namePlaceholder: "Full name",
+    ageLabel: "Age",
+    weightLabel: "Weight (kg)",
+    positionLabel: "Position",
+    positionPlaceholder: "e.g. Midfielder",
+    dietaryLabel: "Dietary restrictions",
+    dietaryPlaceholder: "e.g. Vegetarian, no nuts. Leave blank if none.",
+    addedPrefix: "Added",
+    addedSuffix: "Add another below if you like.",
+    couldNotSave: "Could not save player.",
+    addBtn: "Add player",
+  },
+  schedule: {
+    title: "Weekly training schedule",
+    subtitle:
+      "Tap the days with training. Untapped days become rest days — the plan fuels and recovers accordingly.",
+    sessionTimes: "Session times",
+    saveBtn: "Save schedule",
+    savedPrefix: "Schedule saved at",
+    couldNotSave: "Could not save the schedule.",
+  },
+  days: {
+    Sunday: "Sunday",
+    Monday: "Monday",
+    Tuesday: "Tuesday",
+    Wednesday: "Wednesday",
+    Thursday: "Thursday",
+    Friday: "Friday",
+    Saturday: "Saturday",
+  },
+  daysShort: {
+    Sunday: "Sun",
+    Monday: "Mon",
+    Tuesday: "Tue",
+    Wednesday: "Wed",
+    Thursday: "Thu",
+    Friday: "Fri",
+    Saturday: "Sat",
+  },
+  generate: {
+    generateBtn: "Generate meal plan",
+    regenerateBtn: "Regenerate plan",
+    generating: "Generating…",
+    buildingWeek: "Building a training-aware week…",
+    usuallyTakes: "This usually takes 10–20 seconds.",
+    failed: "Generation failed.",
+  },
+  share: {
+    playerLink: "Player link",
+    open: "Open ↗",
+    copy: "Copy",
+    copied: "Copied",
+  },
+  player: {
+    noPlanTitle: "No plan yet",
+    noPlanBody:
+      "Your meal plan hasn't been created yet. Please check back soon.",
+    avgKcal: "avg kcal",
+    trainingDays: "training days",
+    restDays: "rest days",
+    footer: "Generated by Taqa · Eat for your training",
+  },
+  mealCard: {
+    trainingDay: "Training Day",
+    restDay: "Rest Day",
+    kcalTarget: "kcal target",
+    breakfast: "Breakfast",
+    lunch: "Lunch",
+    dinner: "Dinner",
+    snacks: "Snacks",
+    coachNote: "Coach's note",
+  },
+  hero: {
+    targetFuel: "Target fuel",
+    fuel: "Fuel",
+    recover: "Recover",
+    kcal: "kcal",
+    aiGenerated: "AI-generated",
+    day: "day",
+    of: "of",
+  },
+};
+
+// The Arabic dictionary must match `en`'s shape exactly. `en` is intentionally
+// NOT `as const`, so its property types widen to `string` — otherwise Arabic
+// strings (e.g. "تسجيل الدخول") wouldn't be assignable to the English literals.
+type Dictionary = typeof en;
+
+const ar: Dictionary = {
+  common: {
+    signIn: "تسجيل الدخول",
+    openDashboard: "فتح لوحة التحكم",
+    startFree: "ابدأ مجانًا",
+    howItWorks: "كيف يعمل",
+    pleaseWait: "يرجى الانتظار…",
+    saving: "جارٍ الحفظ…",
+  },
+  toggle: {
+    switchTo: "EN",
+    ariaLabel: "تغيير اللغة",
+  },
+  nav: {
+    overview: "نظرة عامة",
+    schedule: "الجدول",
+    players: "اللاعبون",
+    addPlayer: "إضافة لاعب",
+    dashboard: "لوحة التحكم",
+    collapse: "طيّ",
+    collapseSidebar: "طيّ الشريط الجانبي",
+    expandSidebar: "توسيع الشريط الجانبي",
+    signOut: "تسجيل الخروج",
+    signingOut: "جارٍ تسجيل الخروج…",
+  },
+  home: {
+    heroEyebrow: "تغذية بالذكاء الاصطناعي · أكاديميات الخليج",
+    heroTitleA: "غذاء",
+    heroTitleB: "يصنع",
+    heroTitleHighlight: "الفرق",
+    heroBody:
+      "تحوّل طاقة أسبوع تدريب كل لاعب إلى خطة تغذية شخصية مبنية بالذكاء الاصطناعي، وتسلّمها له عبر رابط خاص واحد. لا تطبيق لتثبيته، ولا حساب لتذكّره.",
+    powerBarCaption: "طاقة — في كل طبق",
+    stats: [
+      { big: "7 أيام", small: "خطة لكل لاعب، كل أسبوع" },
+      { big: "أقل من 30 ث", small: "لإنشاء خطة كاملة" },
+      { big: "رابط واحد", small: "يفتحه اللاعبون — بلا تطبيق، بلا تسجيل دخول" },
+    ],
+    whyEyebrow: "لماذا طاقة",
+    whyTitle: "تغذية بمستوى الأكاديميات، دون قائمة انتظار أخصائي التغذية.",
+    features: [
+      {
+        title: "مخصّصة لكل لاعب",
+        body: "العمر والوزن والمركز والاحتياجات الغذائية تشكّل كل طبق — لا قالب واحد يناسب الجميع.",
+      },
+      {
+        title: "مدعومة بـ Claude",
+        body: "يصيغ نموذج Anthropic أسبوعًا منظّمًا بمستوى احترافي في ثوانٍ.",
+      },
+      {
+        title: "مبنية حول التدريب",
+        body: "أيام التدريب تغذّي الأداء، وأيام الراحة توجّه التعافي. الخطة تعرف الفرق.",
+      },
+      {
+        title: "رابط واحد للمشاركة",
+        body: "يفتح كل لاعب خطته عبر رابط خاص. لا شيء لتثبيته، ولا شيء لتسجيل الدخول إليه.",
+      },
+    ],
+    howEyebrow: "كيف يعمل",
+    howTitle: "ثلاث خطوات من قائمة الفريق إلى التغذية الكاملة.",
+    steps: [
+      {
+        title: "أضف فريقك",
+        body: "أنشئ أكاديميتك، وحدّد جدول التدريب الأسبوعي، وأضف ما تشاء من اللاعبين.",
+      },
+      {
+        title: "أنشئ الخطة",
+        body: "نقرة واحدة تبني خطة تغذية كاملة لسبعة أيام تراعي التدريب، لكل لاعب.",
+      },
+      {
+        title: "شارك",
+        body: "أرسل لكل لاعب رابطه الخاص. سيرى بالضبط ما يأكله، يومًا بيوم.",
+      },
+    ],
+    proofEyebrow: "من خط التماس",
+    proofTitle: "مدرّبون توقّفوا عن التخمين.",
+    quotes: [
+      {
+        quote: "لاعبو فئة تحت 17 صاروا أخيرًا يأكلون لتدريبهم، لا ضدّه.",
+        name: "يوسف المرّي",
+        role: "مدرّب أكاديمية · الدوحة",
+      },
+      {
+        quote: "أحدّد الجدول مرة واحدة، فيصبح لكل لاعب خطة بحلول الصباح.",
+        name: "سارة حدّاد",
+        role: "مسؤولة الأداء · دبي",
+      },
+      {
+        quote: "يثق به الأهل لأنه يبدو كبرنامج حقيقي، لا مجرد تخمين.",
+        name: "خالد ناصر",
+        role: "مدير · الرياض",
+      },
+    ],
+    ctaTitle: "امنح كل لاعب خطة بجدية تدريبه.",
+    footerTagline: "طاقة · كُل من أجل تدريبك",
+    footerSignin: "دخول المدير ←",
+  },
+  login: {
+    brandEyebrow: "طاقة · الطاقة",
+    brandTitleA: "كل لاعب،",
+    brandTitleB: "مزوّد بالطاقة للعمل.",
+    brandBody:
+      "سجّل الدخول لبناء خطط تغذية تراعي التدريب ومشاركتها مع فريقك بنقرة واحدة.",
+    brandFooter: "تغذية بالذكاء الاصطناعي لأكاديميات الرياضة في الخليج",
+    welcomeBack: "مرحبًا بعودتك",
+    createAccountTitle: "أنشئ حسابك",
+    directorSignIn: "دخول المدير",
+    startFuelling: "ابدأ بتغذية لاعبيك",
+    email: "البريد الإلكتروني",
+    password: "كلمة المرور",
+    atLeast6: "6 أحرف على الأقل.",
+    signInBtn: "تسجيل الدخول",
+    createAccountBtn: "إنشاء حساب",
+    newToTaqa: "جديد على طاقة؟",
+    createOne: "أنشئ حسابًا",
+    haveAccount: "لديك حساب بالفعل؟",
+    accountCreatedNotice:
+      "تم إنشاء الحساب. إذا كان تأكيد البريد مفعّلًا، فتحقّق من بريدك ثم سجّل الدخول.",
+    somethingWrong: "حدث خطأ ما.",
+  },
+  dashboard: {
+    getStarted: "لنبدأ",
+    setUpAcademy: "جهّز أكاديميتك",
+    players: "اللاعبون",
+    plansReady: "خطط جاهزة",
+    awaitingPlan: "بانتظار خطة",
+    trainingDays: "أيام التدريب",
+    fuelled: "مكتمل التغذية",
+    noPlayersYet: "لا لاعبين بعد",
+    addFirstAthlete: "أضف أول لاعب أدناه لإنشاء خطة.",
+    statAge: "العمر",
+    statWeight: "الوزن",
+    statDiet: "النظام",
+    dietCustom: "مخصّص",
+    dietNone: "لا يوجد",
+    planReady: "الخطة جاهزة",
+    noPlan: "لا خطة",
+  },
+  academyForm: {
+    title: "أنشئ أكاديميتك",
+    subtitle: "لم تنشئ أكاديمية بعد. أضِفها لتبدأ.",
+    nameLabel: "اسم الأكاديمية",
+    namePlaceholder: "مثال: أكاديمية ريفرسايد لكرة القدم",
+    sportLabel: "الرياضة",
+    sportPlaceholder: "اختر رياضة…",
+    otherSport: "أخرى…",
+    otherSportPlaceholder: "أدخل رياضتك",
+    chooseSport: "يرجى اختيار رياضة.",
+    couldNotSave: "تعذّر حفظ الأكاديمية.",
+    createBtn: "إنشاء الأكاديمية",
+  },
+  sports: {
+    Football: "كرة القدم",
+    Padel: "بادل",
+    Basketball: "كرة السلة",
+    Swimming: "السباحة",
+    "Athletics (Track & Field)": "ألعاب القوى",
+    Tennis: "التنس",
+    Volleyball: "الكرة الطائرة",
+    Handball: "كرة اليد",
+    Cricket: "الكريكت",
+    Rugby: "الرغبي",
+    "Martial Arts": "الفنون القتالية",
+    Cycling: "ركوب الدراجات",
+    Equestrian: "الفروسية",
+  },
+  playerForm: {
+    title: "إضافة لاعب",
+    subtitle: "أضف ما تشاء من اللاعبين. لكل واحد خطته الخاصة.",
+    nameLabel: "الاسم",
+    namePlaceholder: "الاسم الكامل",
+    ageLabel: "العمر",
+    weightLabel: "الوزن (كجم)",
+    positionLabel: "المركز",
+    positionPlaceholder: "مثال: لاعب وسط",
+    dietaryLabel: "قيود غذائية",
+    dietaryPlaceholder: "مثال: نباتي، بلا مكسّرات. اتركه فارغًا إن لم يوجد.",
+    addedPrefix: "تمت إضافة",
+    addedSuffix: "أضف آخر أدناه إن رغبت.",
+    couldNotSave: "تعذّر حفظ اللاعب.",
+    addBtn: "إضافة لاعب",
+  },
+  schedule: {
+    title: "جدول التدريب الأسبوعي",
+    subtitle:
+      "اضغط على أيام التدريب. الأيام غير المحددة تصبح أيام راحة — وتتكيّف الخطة تغذيةً وتعافيًا.",
+    sessionTimes: "أوقات الحصص",
+    saveBtn: "حفظ الجدول",
+    savedPrefix: "تم حفظ الجدول في",
+    couldNotSave: "تعذّر حفظ الجدول.",
+  },
+  days: {
+    Sunday: "الأحد",
+    Monday: "الإثنين",
+    Tuesday: "الثلاثاء",
+    Wednesday: "الأربعاء",
+    Thursday: "الخميس",
+    Friday: "الجمعة",
+    Saturday: "السبت",
+  },
+  daysShort: {
+    Sunday: "أحد",
+    Monday: "اثنين",
+    Tuesday: "ثلاثاء",
+    Wednesday: "أربعاء",
+    Thursday: "خميس",
+    Friday: "جمعة",
+    Saturday: "سبت",
+  },
+  generate: {
+    generateBtn: "أنشئ خطة الوجبات",
+    regenerateBtn: "إعادة إنشاء الخطة",
+    generating: "جارٍ الإنشاء…",
+    buildingWeek: "يجري بناء أسبوع يراعي التدريب…",
+    usuallyTakes: "يستغرق هذا عادة من 10 إلى 20 ثانية.",
+    failed: "فشل الإنشاء.",
+  },
+  share: {
+    playerLink: "رابط اللاعب",
+    open: "فتح ↗",
+    copy: "نسخ",
+    copied: "تم النسخ",
+  },
+  player: {
+    noPlanTitle: "لا خطة بعد",
+    noPlanBody: "لم تُنشأ خطة وجباتك بعد. يرجى التحقق لاحقًا.",
+    avgKcal: "متوسط السعرات",
+    trainingDays: "أيام تدريب",
+    restDays: "أيام راحة",
+    footer: "أُنشئت بواسطة طاقة · كُل من أجل تدريبك",
+  },
+  mealCard: {
+    trainingDay: "يوم تدريب",
+    restDay: "يوم راحة",
+    kcalTarget: "هدف السعرات",
+    breakfast: "الإفطار",
+    lunch: "الغداء",
+    dinner: "العشاء",
+    snacks: "وجبات خفيفة",
+    coachNote: "ملاحظة المدرّب",
+  },
+  hero: {
+    targetFuel: "هدف الطاقة",
+    fuel: "تزوّد",
+    recover: "تعافٍ",
+    kcal: "سعرة",
+    aiGenerated: "مُنشأ بالذكاء الاصطناعي",
+    day: "اليوم",
+    of: "من",
+  },
+};
+
+export const dictionaries = { en, ar };
+
+export function getDictionary(locale: Locale): Dictionary {
+  return dictionaries[locale];
+}
+
+export type { Dictionary };
+
+// English sport name (stored in the DB) → localized label for display.
+export function localizeSport(
+  value: string,
+  dict: Dictionary,
+): string {
+  return (dict.sports as Record<string, string>)[value] ?? value;
+}

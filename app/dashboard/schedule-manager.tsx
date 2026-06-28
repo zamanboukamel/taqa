@@ -4,9 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/brand";
+import { useI18n } from "@/components/i18n/language-provider";
 import type { TrainingSchedule } from "@/lib/types";
 
 // Sunday-first: the working week across the GCC starts on Sunday.
+// These English keys are what we store in the DB; display names come from the
+// dictionary so the schedule reads correctly in either language.
 const DAYS = [
   "Sunday",
   "Monday",
@@ -16,16 +19,6 @@ const DAYS = [
   "Friday",
   "Saturday",
 ] as const;
-
-const SHORT: Record<string, string> = {
-  Monday: "Mon",
-  Tuesday: "Tue",
-  Wednesday: "Wed",
-  Thursday: "Thu",
-  Friday: "Fri",
-  Saturday: "Sat",
-  Sunday: "Sun",
-};
 
 type DayState = { enabled: boolean; time: string };
 
@@ -37,6 +30,7 @@ export default function ScheduleManager({
   schedules: TrainingSchedule[];
 }) {
   const router = useRouter();
+  const { t } = useI18n();
 
   // Build initial state from existing rows (a row means "training day").
   const initial: Record<string, DayState> = {};
@@ -89,7 +83,7 @@ export default function ScheduleManager({
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Could not save the schedule.",
+        err instanceof Error ? err.message : t.schedule.couldNotSave,
       );
     } finally {
       setLoading(false);
@@ -101,12 +95,9 @@ export default function ScheduleManager({
   return (
     <div className="tq-card p-6">
       <h2 className="font-display text-2xl font-semibold text-white">
-        Weekly training schedule
+        {t.schedule.title}
       </h2>
-      <p className="mt-1 text-sm text-mist">
-        Tap the days with training. Untapped days become rest days — the plan
-        fuels and recovers accordingly.
-      </p>
+      <p className="mt-1 text-sm text-mist">{t.schedule.subtitle}</p>
 
       {/* Day pills — the visual week */}
       <div className="mt-5 grid grid-cols-7 gap-1.5 sm:gap-2">
@@ -124,7 +115,7 @@ export default function ScheduleManager({
                   : "border-pitch-line bg-black/20 text-mist hover:border-charge/40 hover:text-white"
               }`}
             >
-              {SHORT[day]}
+              {t.daysShort[day]}
               <span
                 className={`h-1 w-1 rounded-full ${
                   on ? "bg-midnight/60" : "bg-transparent"
@@ -139,7 +130,7 @@ export default function ScheduleManager({
       {enabledDays.length > 0 && (
         <div className="mt-5">
           <p className="font-mono text-xs uppercase tracking-widest text-mist-2">
-            Session times
+            {t.schedule.sessionTimes}
           </p>
           <div className="mt-3 space-y-2">
             {enabledDays.map((day) => (
@@ -147,7 +138,9 @@ export default function ScheduleManager({
                 key={day}
                 className="flex items-center justify-between rounded-xl border border-pitch-line bg-black/20 px-4 py-2.5"
               >
-                <span className="text-sm font-medium text-white">{day}</span>
+                <span className="text-sm font-medium text-white">
+                  {t.days[day]}
+                </span>
                 <input
                   type="time"
                   value={days[day].time}
@@ -166,7 +159,9 @@ export default function ScheduleManager({
         </p>
       )}
       {savedAt && (
-        <p className="tq-alert-ok mt-4">Schedule saved at {savedAt}.</p>
+        <p className="tq-alert-ok mt-4">
+          {t.schedule.savedPrefix} {savedAt}.
+        </p>
       )}
 
       <button
@@ -177,10 +172,10 @@ export default function ScheduleManager({
         {loading ? (
           <>
             <Spinner className="h-4 w-4 !border-midnight/30 !border-t-midnight" />
-            Saving…
+            {t.common.saving}
           </>
         ) : (
-          "Save schedule"
+          t.schedule.saveBtn
         )}
       </button>
     </div>

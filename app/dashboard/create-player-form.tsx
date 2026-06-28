@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/brand";
+import { useI18n } from "@/components/i18n/language-provider";
 
 export default function CreatePlayerForm({ academyId }: { academyId: string }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [weight, setWeight] = useState("");
@@ -41,7 +43,9 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
       setDietary("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save player.");
+      setError(
+        err instanceof Error ? err.message : t.playerForm.couldNotSave,
+      );
     } finally {
       setLoading(false);
     }
@@ -50,16 +54,14 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
   return (
     <div className="tq-card p-6">
       <h2 className="font-display text-2xl font-semibold text-white">
-        Add a player
+        {t.playerForm.title}
       </h2>
-      <p className="mt-1 text-sm text-mist">
-        Add as many athletes as you like. Each one gets their own plan.
-      </p>
+      <p className="mt-1 text-sm text-mist">{t.playerForm.subtitle}</p>
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div>
           <label htmlFor="p-name" className="tq-label">
-            Name
+            {t.playerForm.nameLabel}
           </label>
           <input
             id="p-name"
@@ -68,14 +70,14 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="tq-field"
-            placeholder="Full name"
+            placeholder={t.playerForm.namePlaceholder}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="p-age" className="tq-label">
-              Age
+              {t.playerForm.ageLabel}
             </label>
             <input
               id="p-age"
@@ -90,7 +92,7 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
           </div>
           <div>
             <label htmlFor="p-weight" className="tq-label">
-              Weight (kg)
+              {t.playerForm.weightLabel}
             </label>
             <input
               id="p-weight"
@@ -107,7 +109,7 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
 
         <div>
           <label htmlFor="p-position" className="tq-label">
-            Position
+            {t.playerForm.positionLabel}
           </label>
           <input
             id="p-position"
@@ -115,21 +117,21 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
             required
             value={position}
             onChange={(e) => setPosition(e.target.value)}
-            placeholder="e.g. Midfielder"
+            placeholder={t.playerForm.positionPlaceholder}
             className="tq-field"
           />
         </div>
 
         <div>
           <label htmlFor="p-dietary" className="tq-label">
-            Dietary restrictions
+            {t.playerForm.dietaryLabel}
           </label>
           <textarea
             id="p-dietary"
             rows={2}
             value={dietary}
             onChange={(e) => setDietary(e.target.value)}
-            placeholder="e.g. Vegetarian, no nuts. Leave blank if none."
+            placeholder={t.playerForm.dietaryPlaceholder}
             className="tq-field resize-none"
           />
         </div>
@@ -141,7 +143,7 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
         )}
         {savedName && (
           <p className="tq-alert-ok">
-            Added {savedName}. Add another below if you like.
+            {t.playerForm.addedPrefix} {savedName}. {t.playerForm.addedSuffix}
           </p>
         )}
 
@@ -153,10 +155,10 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
           {loading ? (
             <>
               <Spinner className="h-4 w-4 !border-midnight/30 !border-t-midnight" />
-              Saving…
+              {t.common.saving}
             </>
           ) : (
-            "Add player"
+            t.playerForm.addBtn
           )}
         </button>
       </form>

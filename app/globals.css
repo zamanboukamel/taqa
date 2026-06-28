@@ -37,6 +37,10 @@
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
+  /* Arabic counterparts — matched to the Latin roles above */
+  --font-arabic: var(--font-plex-arabic), "Segoe UI", Tahoma, sans-serif;
+  --font-arabic-display: var(--font-amiri), "Times New Roman", serif;
+
   /* Motion */
   --ease-out-back: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -89,6 +93,33 @@ body {
 .tabular {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* ── Arabic mode ─────────────────────────────────────────────────────────────
+   Swap Latin fonts for their Arabic counterparts and remove the wide Latin
+   letter-spacing, which breaks Arabic's cursive letter joins. Numerals stay on
+   the mono font (digits are identical) for the instrument look. */
+html[lang="ar"] body {
+  font-family: var(--font-arabic);
+}
+html[lang="ar"] .font-display,
+html[lang="ar"] .font-display * {
+  font-family: var(--font-arabic-display);
+  letter-spacing: 0;
+}
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .font-mono {
+  font-family: var(--font-arabic);
+  text-transform: none;
+}
+/* Wide Latin tracking looks broken on Arabic — zero it everywhere in Arabic. */
+html[lang="ar"] .eyebrow,
+html[lang="ar"] [class*="tracking-"] {
+  letter-spacing: 0;
+}
+/* Keep real numbers on the tabular mono font even in Arabic. */
+html[lang="ar"] .tabular {
+  font-family: var(--font-mono);
 }
 
 /* ── Component classes ──────────────────────────────────────────────────── */

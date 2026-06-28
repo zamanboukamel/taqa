@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/components/i18n/language-provider";
 
 // Shows the player's public meal-plan link with a one-tap copy button.
 // The full URL is computed on the server and passed in as a prop, so the
 // server and client render identical HTML (no hydration mismatch).
 export default function ShareLink({ url }: { url: string }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -23,7 +25,7 @@ export default function ShareLink({ url }: { url: string }) {
     <div className="mt-3 rounded-xl border border-pitch-line bg-black/25 p-3">
       <div className="flex items-center justify-between">
         <p className="font-mono text-xs uppercase tracking-widest text-charge">
-          Player link
+          {t.share.playerLink}
         </p>
         <a
           href={url}
@@ -31,7 +33,7 @@ export default function ShareLink({ url }: { url: string }) {
           rel="noopener noreferrer"
           className="text-xs font-medium text-mist transition-colors hover:text-white"
         >
-          Open ↗
+          {t.share.open}
         </a>
       </div>
       <div className="mt-2 flex items-center gap-2">
@@ -47,10 +49,10 @@ export default function ShareLink({ url }: { url: string }) {
           {copied ? (
             <>
               <Check />
-              Copied
+              {t.share.copied}
             </>
           ) : (
-            "Copy"
+            t.share.copy
           )}
         </button>
       </div>

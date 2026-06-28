@@ -6,10 +6,13 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Mark, Wordmark, Spinner } from "@/components/ui/brand";
 import { PowerBar } from "@/components/ui/motion";
+import { useI18n } from "@/components/i18n/language-provider";
+import { LanguageToggle } from "@/components/i18n/language-toggle";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useI18n();
 
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -35,9 +38,7 @@ export default function LoginPage() {
           return;
         }
         // If confirmation is ON, no session yet.
-        setNotice(
-          "Account created. If email confirmation is enabled, check your inbox, then log in.",
-        );
+        setNotice(t.login.accountCreatedNotice);
         setMode("login");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -49,7 +50,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t.login.somethingWrong);
     } finally {
       setLoading(false);
     }
@@ -58,7 +59,7 @@ export default function LoginPage() {
   return (
     <main className="grid min-h-screen bg-midnight lg:grid-cols-2">
       {/* ── Brand panel (desktop only) ─────────────────────────────────── */}
-      <aside className="relative hidden overflow-hidden border-r border-pitch-line lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <aside className="relative hidden overflow-hidden border-e border-pitch-line lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="pointer-events-none absolute inset-0 turf-grid opacity-50" />
         <div className="pointer-events-none absolute -top-32 -left-20 h-[520px] w-[520px] charge-glow" />
 
@@ -69,29 +70,30 @@ export default function LoginPage() {
         </div>
 
         <div className="relative">
-          <p className="eyebrow">طاقة · energy</p>
+          <p className="eyebrow">{t.login.brandEyebrow}</p>
           <h1 className="font-display mt-4 text-4xl font-semibold leading-tight text-white xl:text-5xl">
-            Every athlete,
+            {t.login.brandTitleA}
             <br />
-            fuelled for the work.
+            {t.login.brandTitleB}
           </h1>
           <p className="mt-5 max-w-sm text-base leading-relaxed text-mist">
-            Sign in to build training-aware nutrition plans and share them with
-            your squad in a single tap.
+            {t.login.brandBody}
           </p>
           <div className="mt-8 max-w-xs">
             <PowerBar segments={16} />
           </div>
         </div>
 
-        <p className="relative text-sm text-mist-2">
-          AI nutrition for GCC sports academies
-        </p>
+        <p className="relative text-sm text-mist-2">{t.login.brandFooter}</p>
       </aside>
 
       {/* ── Form panel ─────────────────────────────────────────────────── */}
       <section className="relative flex items-center justify-center px-5 py-12">
         <div className="pointer-events-none absolute inset-0 turf-grid opacity-30 lg:hidden" />
+        {/* Language switch — fixed to the panel's top corner. */}
+        <div className="absolute end-5 top-5 z-10">
+          <LanguageToggle />
+        </div>
         <div className="relative w-full max-w-sm">
           {/* Mobile-only brand */}
           <div className="mb-8 flex justify-center lg:hidden">
@@ -105,12 +107,14 @@ export default function LoginPage() {
               <Mark className="h-9 w-9" />
               <div>
                 <h2 className="font-display text-2xl font-semibold text-white">
-                  {mode === "login" ? "Welcome back" : "Create your account"}
+                  {mode === "login"
+                    ? t.login.welcomeBack
+                    : t.login.createAccountTitle}
                 </h2>
                 <p className="text-sm text-mist">
                   {mode === "login"
-                    ? "Director sign in"
-                    : "Start fuelling your athletes"}
+                    ? t.login.directorSignIn
+                    : t.login.startFuelling}
                 </p>
               </div>
             </div>
@@ -118,7 +122,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="mt-7 space-y-4">
               <div>
                 <label htmlFor="email" className="tq-label">
-                  Email
+                  {t.login.email}
                 </label>
                 <input
                   id="email"
@@ -134,7 +138,7 @@ export default function LoginPage() {
 
               <div>
                 <label htmlFor="password" className="tq-label">
-                  Password
+                  {t.login.password}
                 </label>
                 <input
                   id="password"
@@ -149,7 +153,7 @@ export default function LoginPage() {
                   className="tq-field"
                   placeholder="••••••••"
                 />
-                <p className="mt-1.5 text-xs text-mist-2">At least 6 characters.</p>
+                <p className="mt-1.5 text-xs text-mist-2">{t.login.atLeast6}</p>
               </div>
 
               {error && (
@@ -167,12 +171,12 @@ export default function LoginPage() {
                 {loading ? (
                   <>
                     <Spinner className="h-4 w-4 !border-midnight/30 !border-t-midnight" />
-                    Please wait…
+                    {t.common.pleaseWait}
                   </>
                 ) : mode === "login" ? (
-                  "Sign in"
+                  t.login.signInBtn
                 ) : (
-                  "Create account"
+                  t.login.createAccountBtn
                 )}
               </button>
             </form>
@@ -189,13 +193,17 @@ export default function LoginPage() {
           >
             {mode === "login" ? (
               <>
-                New to Taqa?{" "}
-                <span className="font-semibold text-charge">Create an account</span>
+                {t.login.newToTaqa}{" "}
+                <span className="font-semibold text-charge">
+                  {t.login.createOne}
+                </span>
               </>
             ) : (
               <>
-                Already have an account?{" "}
-                <span className="font-semibold text-charge">Sign in</span>
+                {t.login.haveAccount}{" "}
+                <span className="font-semibold text-charge">
+                  {t.login.signInBtn}
+                </span>
               </>
             )}
           </button>

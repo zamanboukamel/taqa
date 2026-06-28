@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Reveal, Stagger, StaggerItem, PowerBar } from "@/components/ui/motion";
 import { Mark, Wordmark } from "@/components/ui/brand";
 import { HeroShowcase } from "@/components/ui/hero-showcase";
+import { LanguageToggle } from "@/components/i18n/language-toggle";
+import { getLocale } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 // The marketing landing — the first thing a visiting director sees.
 // Public; we only peek at the session to swap the nav CTA.
@@ -13,6 +16,9 @@ export default async function Home() {
   } = await supabase.auth.getUser();
   const authed = Boolean(user);
 
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
   return (
     <div className="relative overflow-hidden bg-midnight text-white">
       {/* Ambient turf grid + charge glow behind everything */}
@@ -22,31 +28,32 @@ export default async function Home() {
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Wordmark />
-        <Link
-          href={authed ? "/dashboard" : "/login"}
-          className="tq-btn tq-btn-ghost !px-4 !py-2 text-sm"
-        >
-          {authed ? "Open dashboard" : "Sign in"}
-        </Link>
+        <div className="flex items-center gap-2.5">
+          <LanguageToggle />
+          <Link
+            href={authed ? "/dashboard" : "/login"}
+            className="tq-btn tq-btn-ghost !px-4 !py-2 text-sm"
+          >
+            {authed ? t.common.openDashboard : t.common.signIn}
+          </Link>
+        </div>
       </header>
 
       {/* ── Hero ────────────────────────────────────────────────────────── */}
       <section className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-10 lg:grid-cols-2 lg:gap-8 lg:pt-16">
         <Reveal>
-          <p className="eyebrow">AI nutrition · GCC academies</p>
+          <p className="eyebrow">{t.home.heroEyebrow}</p>
           <h1 className="font-display mt-5 text-5xl font-semibold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-            Fuel
+            {t.home.heroTitleA}
             <br />
-            the&nbsp;
+            {t.home.heroTitleB}&nbsp;
             <span className="bg-gradient-to-r from-volt to-fuel bg-clip-text text-transparent">
-              work
+              {t.home.heroTitleHighlight}
             </span>
-            .
+            {locale === "en" ? "." : ""}
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-mist">
-            Taqa turns each athlete&apos;s training week into a personalised,
-            AI-built nutrition plan — and hands it to them on a single private
-            link. No app to install, no login to remember.
+            {t.home.heroBody}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -56,19 +63,19 @@ export default async function Home() {
                 href={authed ? "/dashboard" : "/login"}
                 className="tq-btn tq-btn-primary relative px-6 py-3.5 text-base"
               >
-                {authed ? "Open dashboard" : "Start free"}
+                {authed ? t.common.openDashboard : t.common.startFree}
                 <Arrow />
               </Link>
             </span>
             <a href="#how" className="tq-btn tq-btn-ghost px-5 py-3.5 text-base">
-              How it works
+              {t.common.howItWorks}
             </a>
           </div>
 
           <div className="mt-8 max-w-xs">
             <PowerBar segments={16} />
             <p className="mt-2.5 font-mono text-xs uppercase tracking-widest text-mist-2">
-              طاقة — energy, on every plate
+              {t.home.powerBarCaption}
             </p>
           </div>
         </Reveal>
@@ -84,11 +91,7 @@ export default async function Home() {
       {/* ── Stat strip ──────────────────────────────────────────────────── */}
       <section className="relative z-10 border-y border-pitch-line bg-midnight-2/60">
         <Stagger className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-pitch-line px-5 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {[
-            { big: "7-day", small: "plans per athlete, every week" },
-            { big: "<30s", small: "to generate a full plan" },
-            { big: "1 link", small: "players open — no app, no login" },
-          ].map((s) => (
+          {t.home.stats.map((s) => (
             <StaggerItem
               key={s.big}
               className="px-2 py-7 text-center sm:py-9"
@@ -105,18 +108,18 @@ export default async function Home() {
       {/* ── Value props ─────────────────────────────────────────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-5 py-20 sm:py-24">
         <Reveal>
-          <p className="eyebrow">Why Taqa</p>
+          <p className="eyebrow">{t.home.whyEyebrow}</p>
           <h2 className="font-display mt-3 max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl">
-            Academy-grade nutrition, without the dietitian&apos;s waiting list.
+            {t.home.whyTitle}
           </h2>
         </Reveal>
 
         <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((f) => (
+          {t.home.features.map((f, i) => (
             <StaggerItem key={f.title}>
               <article className="tq-card group h-full p-6 transition-colors duration-300 hover:border-charge/60">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-charge/12 text-charge transition-transform duration-300 group-hover:scale-110">
-                  {f.icon}
+                  {FEATURE_ICONS[i]}
                 </div>
                 <h3 className="mt-5 text-lg font-semibold text-white">
                   {f.title}
@@ -137,17 +140,19 @@ export default async function Home() {
       >
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           <Reveal>
-            <p className="eyebrow">How it works</p>
+            <p className="eyebrow">{t.home.howEyebrow}</p>
             <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">
-              Three steps from squad list to fuelled.
+              {t.home.howTitle}
             </h2>
           </Reveal>
 
           <Stagger className="mt-12 grid gap-8 md:grid-cols-3">
-            {STEPS.map((s) => (
-              <StaggerItem key={s.n}>
+            {t.home.steps.map((s, i) => (
+              <StaggerItem key={s.title}>
                 <div className="flex items-baseline gap-4">
-                  <span className="font-mono text-sm text-charge">{s.n}</span>
+                  <span className="font-mono text-sm text-charge">
+                    {STEP_NUMBERS[i]}
+                  </span>
                   <span className="h-px flex-1 bg-pitch-line" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-white">
@@ -165,13 +170,13 @@ export default async function Home() {
       {/* ── Social proof ────────────────────────────────────────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-5 py-20 sm:py-24">
         <Reveal>
-          <p className="eyebrow">From the touchline</p>
+          <p className="eyebrow">{t.home.proofEyebrow}</p>
           <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">
-            Coaches who stopped guessing.
+            {t.home.proofTitle}
           </h2>
         </Reveal>
         <Stagger className="mt-12 grid gap-5 md:grid-cols-3">
-          {QUOTES.map((q) => (
+          {t.home.quotes.map((q, i) => (
             <StaggerItem key={q.name}>
               <figure className="tq-card flex h-full flex-col p-6">
                 <blockquote className="font-display text-lg leading-snug text-white/95">
@@ -179,7 +184,7 @@ export default async function Home() {
                 </blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-charge/15 font-mono text-sm font-semibold text-charge">
-                    {q.initials}
+                    {QUOTE_INITIALS[i]}
                   </span>
                   <span className="text-sm">
                     <span className="block font-semibold text-white">
@@ -203,14 +208,14 @@ export default async function Home() {
             <div className="relative">
               <Mark className="mx-auto h-12 w-12" />
               <h2 className="font-display mx-auto mt-6 max-w-xl text-3xl font-semibold leading-tight sm:text-4xl">
-                Give every athlete a plan as serious as their training.
+                {t.home.ctaTitle}
               </h2>
               <div className="mt-8 flex justify-center">
                 <Link
                   href={authed ? "/dashboard" : "/login"}
                   className="tq-btn tq-btn-primary px-7 py-4 text-base"
                 >
-                  {authed ? "Open dashboard" : "Start free"}
+                  {authed ? t.common.openDashboard : t.common.startFree}
                   <Arrow />
                 </Link>
               </div>
@@ -224,10 +229,10 @@ export default async function Home() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row">
           <Wordmark markClassName="h-6 w-6" />
           <p className="text-sm text-mist-2">
-            © {YEAR} Taqa · Eat for your training
+            © {YEAR} {t.home.footerTagline}
           </p>
           <Link href="/login" className="text-sm text-mist hover:text-white">
-            Director sign in →
+            {t.home.footerSignin}
           </Link>
         </div>
       </footer>
@@ -246,7 +251,8 @@ function Arrow() {
       viewBox="0 0 16 16"
       fill="none"
       aria-hidden="true"
-      className="transition-transform"
+      // Flip the arrow to point the reading direction in Arabic (RTL).
+      className="transition-transform rtl:-scale-x-100"
     >
       <path
         d="M3 8h9M8.5 4l4 4-4 4"
@@ -259,67 +265,18 @@ function Arrow() {
   );
 }
 
-const FEATURES = [
-  {
-    title: "Personalised per athlete",
-    body: "Age, weight, position and dietary needs shape every plate — not a one-size template.",
-    icon: <IconUser />,
-  },
-  {
-    title: "Powered by Claude",
-    body: "Anthropic's model drafts a structured, academy-grade week in seconds.",
-    icon: <IconSpark />,
-  },
-  {
-    title: "Built around training",
-    body: "Training days fuel performance, rest days steer recovery. The plan knows the difference.",
-    icon: <IconCalendar />,
-  },
-  {
-    title: "One link to share",
-    body: "Each athlete opens their plan on a private link. Nothing to install, nothing to log in to.",
-    icon: <IconLink />,
-  },
+// Visual-only data that pairs by index with the translated copy in the
+// dictionary (icons, step numbers, avatar monograms).
+const FEATURE_ICONS = [
+  <IconUser key="u" />,
+  <IconSpark key="s" />,
+  <IconCalendar key="c" />,
+  <IconLink key="l" />,
 ];
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Add your squad",
-    body: "Create your academy, set the weekly training schedule, and add as many players as you like.",
-  },
-  {
-    n: "02",
-    title: "Generate",
-    body: "One tap builds a full 7-day, training-aware nutrition plan for each athlete.",
-  },
-  {
-    n: "03",
-    title: "Share",
-    body: "Send every player their private link. They see exactly what to eat, day by day.",
-  },
-];
+const STEP_NUMBERS = ["01", "02", "03"];
 
-const QUOTES = [
-  {
-    quote: "My U17s finally eat for their sessions, not against them.",
-    name: "Yousef Al-Marri",
-    role: "Academy Coach · Doha",
-    initials: "YM",
-  },
-  {
-    quote: "I set the schedule once and every player has a plan by morning.",
-    name: "Sara Haddad",
-    role: "Performance Lead · Dubai",
-    initials: "SH",
-  },
-  {
-    quote: "Parents trust it because it looks like a real programme, not a guess.",
-    name: "Khalid Nasser",
-    role: "Director · Riyadh",
-    initials: "KN",
-  },
-];
+const QUOTE_INITIALS = ["YM", "SH", "KN"];
 
 // ── Inline icons (no icon library; each is on-theme) ──────────────────────
 function IconUser() {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/brand";
 import { Select } from "@/components/ui/select";
+import { useI18n } from "@/components/i18n/language-provider";
 
 // The most popular academy sports across the GCC, plus an "Other" escape hatch.
 const SPORTS = [
@@ -25,18 +26,31 @@ const SPORTS = [
 
 export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [name, setName] = useState("");
+  // `sport` holds the localized label shown in the dropdown.
   const [sport, setSport] = useState("");
   const [customSport, setCustomSport] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Localized labels for the dropdown, plus a map back to the English value we
+  // store in the DB (so the AI prompt + display stay language-independent).
+  const sportLabels = SPORTS.map((s) => t.sports[s]);
+  const labelToEnglish = Object.fromEntries(
+    SPORTS.map((s) => [t.sports[s], s as string]),
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Resolve the final sport: the "Other…" option uses the free-text value.
-    const sportType = sport === "Other…" ? customSport.trim() : sport;
+    // Resolve the final sport: the "Other…" option uses the free-text value;
+    // a picked sport is converted from its localized label back to English.
+    const isOther = sport === t.academyForm.otherSport;
+    const sportType = isOther
+      ? customSport.trim()
+      : labelToEnglish[sport] ?? sport;
     if (!sportType) {
-      setError("Please choose a sport.");
+      setError(t.academyForm.chooseSport);
       return;
     }
     setLoading(true);
@@ -49,7 +63,9 @@ export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
       if (error) throw error;
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save academy.");
+      setError(
+        err instanceof Error ? err.message : t.academyForm.couldNotSave,
+      );
       setLoading(false);
     }
   }
@@ -57,16 +73,14 @@ export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
   return (
     <div className="tq-card p-6">
       <h2 className="font-display text-xl font-semibold text-white">
-        Create your academy
+        {t.academyForm.title}
       </h2>
-      <p className="mt-1 text-sm text-mist">
-        You haven&apos;t set up an academy yet. Add it to get started.
-      </p>
+      <p className="mt-1 text-sm text-mist">{t.academyForm.subtitle}</p>
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div>
           <label htmlFor="academy-name" className="tq-label">
-            Academy name
+            {t.academyForm.nameLabel}
           </label>
           <input
             id="academy-name"
@@ -74,30 +88,30 @@ export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Riverside Football Academy"
+            placeholder={t.academyForm.namePlaceholder}
             className="tq-field"
           />
         </div>
 
         <div>
           <label htmlFor="sport-type" className="tq-label">
-            Sport
+            {t.academyForm.sportLabel}
           </label>
           <Select
             id="sport-type"
             value={sport}
             onChange={setSport}
-            placeholder="Choose a sport…"
-            options={[...SPORTS, "Other…"]}
+            placeholder={t.academyForm.sportPlaceholder}
+            options={[...sportLabels, t.academyForm.otherSport]}
           />
 
-          {sport === "Other…" && (
+          {sport === t.academyForm.otherSport && (
             <input
               type="text"
               required
               value={customSport}
               onChange={(e) => setCustomSport(e.target.value)}
-              placeholder="Enter your sport"
+              placeholder={t.academyForm.otherSportPlaceholder}
               className="tq-field mt-2"
               autoFocus
             />
@@ -118,10 +132,10 @@ export default function CreateAcademyForm({ ownerId }: { ownerId: string }) {
           {loading ? (
             <>
               <Spinner className="h-4 w-4 !border-midnight/30 !border-t-midnight" />
-              Saving…
+              {t.common.saving}
             </>
           ) : (
-            "Create academy"
+            t.academyForm.createBtn
           )}
         </button>
       </form>
