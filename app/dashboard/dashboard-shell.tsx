@@ -12,6 +12,7 @@ import LogoutButton from "./logout-button";
 const NAV = [
   { href: "#overview", key: "overview", icon: <IconGrid /> },
   { href: "#schedule", key: "schedule", icon: <IconCalendar /> },
+  { href: "#ramadan", key: "ramadan", icon: <IconMoon /> },
   { href: "#players", key: "players", icon: <IconUsers /> },
   { href: "#add-player", key: "addPlayer", icon: <IconPlus /> },
 ] as const;
@@ -130,6 +131,18 @@ function IconPlus() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+function IconMoon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M20 14.5A8 8 0 119.5 4a6.5 6.5 0 1010.5 10.5z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

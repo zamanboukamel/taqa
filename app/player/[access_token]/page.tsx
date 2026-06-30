@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DayCard } from "@/app/player/meal-card";
+import { RamadanPlan } from "@/app/player/ramadan-plan";
 import { Mark } from "@/components/ui/brand";
 import { Stagger, StaggerItem, PowerBar } from "@/components/ui/motion";
 import { CountUp } from "@/components/ui/count-up";
 import { LanguageToggle } from "@/components/i18n/language-toggle";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary, localizeSport } from "@/lib/i18n/dictionaries";
-import type { Academy, MealPlan, Player } from "@/lib/types";
+import { isRamadanPlan, type Academy, type MealPlan, type Player } from "@/lib/types";
 
 // This page is PUBLIC — no login. A player opens it with their secret link.
 // It uses the service-role client (bypasses RLS) and finds the player ONLY by
@@ -48,6 +49,12 @@ export default async function PlayerPlanPage(
       .maybeSingle<Academy>(),
   ]);
 
+  // Discriminate the plan shape: a Ramadan plan is rendered as a fasting-day
+  // timeline; a standard plan keeps its original meal-card layout untouched.
+  const plan = mealPlan?.plan_json ?? null;
+  const ramadan = plan && isRamadanPlan(plan) ? plan : null;
+  const standard = plan && !isRamadanPlan(plan) ? plan : null;
+
   // Render Sunday-first (GCC week), regardless of the order the plan was
   // generated in — so existing Monday-first plans display correctly too.
   const DAY_ORDER = [
@@ -59,15 +66,20 @@ export default async function PlayerPlanPage(
     "Friday",
     "Saturday",
   ];
-  const days = [...(mealPlan?.plan_json?.days ?? [])].sort(
+  const standardDays = [...(standard?.days ?? [])].sort(
     (a, b) => DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day),
   );
-  const trainingDays = days.filter((d) => d.label === "Training Day").length;
-  const avgCalories = days.length
+
+  // Header stats read the same common fields on either plan shape.
+  const allDays = ramadan?.days ?? standard?.days ?? [];
+  const trainingDays = allDays.filter((d) => d.label === "Training Day").length;
+  const avgCalories = allDays.length
     ? Math.round(
-        days.reduce((sum, d) => sum + d.estimated_calories, 0) / days.length,
+        allDays.reduce((sum, d) => sum + d.estimated_calories, 0) /
+          allDays.length,
       )
     : 0;
+  const hasPlan = allDays.length > 0;
 
   return (
     <main className="min-h-screen bg-bone text-ink">
@@ -112,8 +124,14 @@ export default async function PlayerPlanPage(
             </div>
           </div>
 
-          {days.length > 0 && (
+          {hasPlan && (
             <>
+              {ramadan && (
+                <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-charge/15 px-3 py-1 font-mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-volt ring-1 ring-charge/30">
+                  <span className="h-1.5 w-1.5 rounded-full bg-volt" />
+                  {t.ramadan.modeBadge}
+                </span>
+              )}
               <div className="mt-6 grid grid-cols-3 gap-3">
                 <HeaderStat
                   value={<CountUp value={avgCalories} />}
@@ -135,16 +153,18 @@ export default async function PlayerPlanPage(
 
       {/* ── Plan ────────────────────────────────────────────────────────── */}
       <div className="mx-auto -mt-6 max-w-md px-4 pb-2">
-        {days.length === 0 ? (
+        {!hasPlan ? (
           <div className="rounded-3xl bg-white px-6 py-12 text-center shadow-[0_14px_44px_-18px_rgba(11,20,16,0.35)] ring-1 ring-black/5">
             <p className="text-lg font-bold text-ink">{t.player.noPlanTitle}</p>
             <p className="mt-1.5 text-base text-slate-600">
               {t.player.noPlanBody}
             </p>
           </div>
+        ) : ramadan ? (
+          <RamadanPlan plan={ramadan} t={t} />
         ) : (
           <Stagger className="space-y-4" gap={0.08}>
-            {days.map((day) => (
+            {standardDays.map((day) => (
               <StaggerItem key={day.day}>
                 <DayCard
                   day={day}

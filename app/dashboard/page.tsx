@@ -1,7 +1,12 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Academy, TrainingSchedule, Player } from "@/lib/types";
+import type {
+  Academy,
+  TrainingSchedule,
+  Player,
+  RamadanDayTimes,
+} from "@/lib/types";
 import { Stagger, StaggerItem } from "@/components/ui/motion";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary, localizeSport } from "@/lib/i18n/dictionaries";
@@ -11,6 +16,8 @@ import ScheduleManager from "./schedule-manager";
 import CreatePlayerForm from "./create-player-form";
 import GeneratePlanButton from "./generate-plan-button";
 import ShareLink from "./share-link";
+import RamadanSettings from "./ramadan-settings";
+import PlayerRamadanControls from "./player-ramadan-controls";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -40,6 +47,7 @@ export default async function DashboardPage() {
   let schedules: TrainingSchedule[] = [];
   let players: Player[] = [];
   let plannedIds = new Set<string>();
+  let ramadanTimes: RamadanDayTimes[] = [];
 
   if (academy) {
     const { data: sched } = await supabase
@@ -47,6 +55,12 @@ export default async function DashboardPage() {
       .select("*")
       .eq("academy_id", academy.id);
     schedules = sched ?? [];
+
+    const { data: times } = await supabase
+      .from("ramadan_days")
+      .select("*")
+      .eq("academy_id", academy.id);
+    ramadanTimes = times ?? [];
 
     const { data: playerRows } = await supabase
       .from("players")
@@ -107,6 +121,18 @@ export default async function DashboardPage() {
           {/* ── Schedule ─────────────────────────────────────────────── */}
           <section id="schedule" className="scroll-mt-20">
             <ScheduleManager academyId={academy.id} schedules={schedules} />
+          </section>
+
+          {/* ── Ramadan Mode ─────────────────────────────────────────── */}
+          <section id="ramadan" className="scroll-mt-20">
+            <RamadanSettings
+              academyId={academy.id}
+              initialMode={academy.ramadan_mode}
+              initialCity={academy.city}
+              initialCountry={academy.country}
+              initialStartDate={academy.ramadan_start_date}
+              initialTimes={ramadanTimes}
+            />
           </section>
 
           {/* ── Players ──────────────────────────────────────────────── */}
@@ -179,6 +205,13 @@ export default async function DashboardPage() {
                             }
                           />
                         </dl>
+
+                        <PlayerRamadanControls
+                          playerId={player.id}
+                          initialOverride={player.ramadan_mode}
+                          initialFasting={player.is_fasting}
+                          initialTrainingTime={player.training_time}
+                        />
 
                         <GeneratePlanButton
                           playerId={player.id}
