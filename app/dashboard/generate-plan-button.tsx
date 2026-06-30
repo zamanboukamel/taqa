@@ -27,8 +27,24 @@ export default function GeneratePlanButton({
         // Tell the server which language to write the plan content in.
         body: JSON.stringify({ playerId, locale }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
-      if (!res.ok) throw new Error(data.error || t.generate.failed);
+
+      // The body isn't always JSON: a platform timeout (504) returns plain
+      // text. Read as text first and parse defensively so we never surface a
+      // raw "Unexpected token" error to the director.
+      const text = await res.text();
+      let data: { ok?: boolean; error?: string } | null = null;
+      try {
+        data = JSON.parse(text) as { ok?: boolean; error?: string };
+      } catch {
+        data = null;
+      }
+
+      if (!res.ok) {
+        const timedOut = res.status === 504 || res.status === 408;
+        throw new Error(
+          data?.error || (timedOut ? t.generate.timeout : t.generate.failed),
+        );
+      }
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : t.generate.failed);

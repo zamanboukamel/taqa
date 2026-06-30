@@ -25,10 +25,10 @@ import {
   type RamadanDayBrief,
 } from "@/lib/ramadan/generation";
 
-// Anthropic SDK needs the Node runtime (not edge). Allow up to 60s since
-// generation can take 10–20s.
+// Anthropic SDK needs the Node runtime (not edge). Ramadan plans are larger and
+// can take longer, so allow more headroom (capped by the Vercel plan's limit).
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 // Remove accidental ```json fences and any stray text around the JSON object.
 function extractJson(raw: string): string {
@@ -122,10 +122,14 @@ export async function POST(req: Request) {
     }
     const anthropic = new Anthropic({ apiKey });
 
-    async function callClaude(system: string, userPrompt: string): Promise<string> {
+    async function callClaude(
+      system: string,
+      userPrompt: string,
+      maxTokens = 4096,
+    ): Promise<string> {
       const msg = await anthropic.messages.create({
         model: "claude-sonnet-4-6",
-        max_tokens: 4096,
+        max_tokens: maxTokens,
         system,
         messages: [{ role: "user", content: userPrompt }],
       });
@@ -247,7 +251,9 @@ Return ONLY valid JSON, no markdown, no code fences, no commentary, in exactly t
 // a safety note, validates, and retries once. Returns null on failure.
 async function buildRamadanPlanWithRetry(args: {
   supabase: Awaited<ReturnType<typeof createClient>>;
-  anthropic: { call: (system: string, prompt: string) => Promise<string> };
+  anthropic: {
+    call: (system: string, prompt: string, maxTokens?: number) => Promise<string>;
+  };
   player: Player;
   academy: Academy;
   schedules: TrainingSchedule[];
@@ -356,7 +362,10 @@ async function buildRamadanPlanWithRetry(args: {
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const raw = await anthropic.call(system, prompt);
+      // Ramadan plans are large (7 days × multiple segments + hydration +
+      // safety). Give the model ample room so the JSON isn't truncated — a
+      // truncated reply would fail validation and force a slow second attempt.
+      const raw = await anthropic.call(system, prompt, 8192);
       const parsed = JSON.parse(extractJson(raw)) as Record<string, unknown>;
       // Guarantee a safety note even if the model omitted one — a Ramadan plan
       // must never render without medical-oversight guidance.

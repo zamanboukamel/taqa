@@ -227,6 +227,7 @@ const en = {
     buildingWeek: "Building a training-aware week…",
     usuallyTakes: "This usually takes 10–20 seconds.",
     failed: "Generation failed.",
+    timeout: "That took too long and timed out. Please try again.",
   },
   share: {
     playerLink: "Player link",
@@ -542,6 +543,7 @@ const ar: Dictionary = {
     buildingWeek: "يجري بناء أسبوع يراعي التدريب…",
     usuallyTakes: "يستغرق هذا عادة من 10 إلى 20 ثانية.",
     failed: "فشل الإنشاء.",
+    timeout: "استغرق ذلك وقتًا طويلًا وانتهت المهلة. يرجى المحاولة مرة أخرى.",
   },
   share: {
     playerLink: "رابط اللاعب",
