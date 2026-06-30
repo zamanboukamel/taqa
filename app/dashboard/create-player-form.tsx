@@ -32,6 +32,8 @@ export default function CreatePlayerForm({ academyId }: { academyId: string }) {
         weight_kg: weight ? Number(weight) : null,
         position,
         dietary_restrictions: dietary,
+        // Athletes are non-fasting by default — the director opts them in.
+        is_fasting: false,
       });
       if (error) throw error;
       // Clear the form so the next player can be added immediately.

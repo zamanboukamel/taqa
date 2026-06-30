@@ -146,6 +146,19 @@ export default async function PlayerPlanPage(
               <div className="mt-5">
                 <PowerBar segments={14} />
               </div>
+              {ramadan && (
+                <div className="mt-5 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldIcon />
+                    <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.16em] text-amber-300">
+                      {t.ramadan.safetyTitle}
+                    </p>
+                  </div>
+                  <p className="mt-1.5 text-[0.85rem] font-medium leading-snug text-amber-100/90">
+                    {ramadan.safety_note}
+                  </p>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -212,4 +225,24 @@ function initials(name: string) {
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+function ShieldIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z"
+        stroke="#fbbf24"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 12l2 2 4-4"
+        stroke="#fbbf24"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }

@@ -43,29 +43,10 @@ export function RamadanPlan({
 
   return (
     <div className="space-y-4">
-      {/* Safety note — shown ONCE, prominently, on every Ramadan plan. */}
-      <SafetyNote text={plan.safety_note} title={t.ramadan.safetyTitle} />
-
       {days.map((day) => (
         <RamadanDayCard key={day.day} day={day} t={t} />
       ))}
     </div>
-  );
-}
-
-function SafetyNote({ text, title }: { text: string; title: string }) {
-  return (
-    <section className="rounded-3xl border-l-[4px] border-amber-400 bg-amber-50 px-5 py-4 shadow-[0_10px_30px_-18px_rgba(11,20,16,0.35)] ring-1 ring-amber-200">
-      <div className="flex items-center gap-2">
-        <ShieldIcon />
-        <p className="font-mono text-[0.7rem] font-bold uppercase tracking-[0.16em] text-amber-700">
-          {title}
-        </p>
-      </div>
-      <p className="mt-2 text-[0.95rem] font-medium leading-snug text-amber-950">
-        {text}
-      </p>
-    </section>
   );
 }
 
@@ -189,26 +170,6 @@ function Segment({
         </p>
       </div>
     </div>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z"
-        stroke="#b45309"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 12l2 2 4-4"
-        stroke="#b45309"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 

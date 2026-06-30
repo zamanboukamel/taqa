@@ -210,7 +210,6 @@ export default async function DashboardPage() {
                           playerId={player.id}
                           initialOverride={player.ramadan_mode}
                           initialFasting={player.is_fasting}
-                          initialTrainingTime={player.training_time}
                         />
 
                         <GeneratePlanButton

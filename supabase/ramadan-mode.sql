@@ -21,9 +21,9 @@ alter table academies
 alter table players
   -- Null => inherit the academy default. True/false => explicit per-player choice.
   add column if not exists ramadan_mode   boolean,
-  -- Some athletes don't fast (medical exemption, age, choice). Defaults to true
-  -- because most will, but it is always the athlete's/family's choice to change.
-  add column if not exists is_fasting     boolean not null default true,
+  -- Some athletes don't fast (medical exemption, age, choice). Off by default —
+  -- the director opts an athlete in; it is always the athlete's/family's choice.
+  add column if not exists is_fasting     boolean not null default false,
   -- The athlete's representative training time during Ramadan ("HH:MM", 24h).
   -- Drives the before-iftar / after-iftar / after-suhoor logic.
   add column if not exists training_time  text;

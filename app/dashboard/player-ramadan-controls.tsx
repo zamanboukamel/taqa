@@ -15,12 +15,10 @@ export default function PlayerRamadanControls({
   playerId,
   initialOverride,
   initialFasting,
-  initialTrainingTime,
 }: {
   playerId: string;
   initialOverride: boolean | null;
   initialFasting: boolean;
-  initialTrainingTime: string | null;
 }) {
   const router = useRouter();
   const { t } = useI18n();
@@ -35,7 +33,6 @@ export default function PlayerRamadanControls({
 
   const [override, setOverride] = useState(overrideToLabel(initialOverride));
   const [fasting, setFasting] = useState(initialFasting);
-  const [training, setTraining] = useState(initialTrainingTime ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +48,6 @@ export default function PlayerRamadanControls({
         .update({
           ramadan_mode: labelToOverride(override),
           is_fasting: fasting,
-          training_time: training || null,
         })
         .eq("id", playerId);
       if (error) throw error;
@@ -92,20 +88,6 @@ export default function PlayerRamadanControls({
           <div className="flex items-center justify-between rounded-xl border border-pitch-line bg-black/20 px-3 py-2.5">
             <span className="text-sm text-white">{t.ramadan.fastingLabel}</span>
             <Toggle checked={fasting} onChange={setFasting} />
-          </div>
-
-          <div>
-            <label htmlFor={`tt-${playerId}`} className="tq-label">
-              {t.ramadan.trainingLabel}
-            </label>
-            <input
-              id={`tt-${playerId}`}
-              type="time"
-              value={training}
-              onChange={(e) => setTraining(e.target.value)}
-              className="rounded-lg border border-pitch-line bg-midnight px-2.5 py-1.5 text-sm text-white [color-scheme:dark] focus:border-charge focus:outline-none"
-            />
-            <p className="mt-1 text-xs text-mist-2">{t.ramadan.trainingHint}</p>
           </div>
 
           <button
