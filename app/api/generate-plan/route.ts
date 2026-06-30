@@ -30,6 +30,11 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
+// Model used for all meal-plan generation. Haiku 4.5 is faster and cheaper than
+// Sonnet; we're trialling it to see if plan quality holds up. To revert, switch
+// this back to "claude-sonnet-4-6".
+const GENERATION_MODEL = "claude-haiku-4-5";
+
 // Remove accidental ```json fences and any stray text around the JSON object.
 function extractJson(raw: string): string {
   let t = raw.trim();
@@ -128,7 +133,7 @@ export async function POST(req: Request) {
       maxTokens = 4096,
     ): Promise<string> {
       const msg = await anthropic.messages.create({
-        model: "claude-sonnet-4-6",
+        model: GENERATION_MODEL,
         max_tokens: maxTokens,
         system,
         messages: [{ role: "user", content: userPrompt }],
